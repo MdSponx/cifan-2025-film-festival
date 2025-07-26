@@ -14,7 +14,7 @@ import CrewManagement from './CrewManagement';
 import AgreementCheckboxes from './AgreementCheckboxes';
 import NationalitySelector from '../ui/NationalitySelector';
 import AnimatedButton from '../ui/AnimatedButton';
-import SubmissionProgress as SubmissionProgressComponent from '../ui/SubmissionProgress';
+import SubmissionProgressComponent from '../ui/SubmissionProgress';
 import ErrorMessage from './ErrorMessage';
 
 interface UnifiedSubmissionFormProps {
