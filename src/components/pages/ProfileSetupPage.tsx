@@ -66,9 +66,12 @@ const ProfileSetupPage: React.FC = () => {
       await refreshUserProfile();
       setIsComplete(true);
       
-      // Redirect to home after a short delay
+      // Redirect to user zone profile page after a short delay
       setTimeout(() => {
-        window.location.hash = '#';
+        window.location.hash = '#profile/edit';
+        setTimeout(() => {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }, 100);
       }, 2000);
     } catch (error: any) {
       console.error('Profile setup error:', error);

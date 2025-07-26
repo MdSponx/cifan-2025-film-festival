@@ -162,7 +162,7 @@ const ProfileEditPage: React.FC<ProfileEditPageProps> = ({ onSidebarToggle }) =>
       )}
 
       {/* Edit Form */}
-      <div className="glass-container rounded-xl p-6 sm:p-8 w-full max-h-[80vh] overflow-y-auto">
+      <div className="glass-container rounded-xl p-6 sm:p-8 w-full">
         <ProfileForm
           initialData={getInitialData()}
           onSubmit={handleSubmit}
