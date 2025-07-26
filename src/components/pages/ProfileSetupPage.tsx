@@ -99,72 +99,73 @@ const ProfileSetupPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#110D16] pt-24 pb-12 px-4">
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className={`text-3xl ${getClass('header')} text-white mb-2`}>
-            {t('profile.setupTitle')}
-          </h1>
-          <p className={`text-white/80 text-lg ${getClass('subtitle')}`}>
-            {t('profile.setupSubtitle')}
+    <div className="min-h-screen bg-[#110D16] pt-24 pb-12">
+      {/* Header */}
+      <div className="text-center mb-8 px-4">
+        <h1 className={`text-3xl ${getClass('header')} text-white mb-2`}>
+          {t('profile.setupTitle')}
+        </h1>
+        <p className={`text-white/80 text-lg ${getClass('subtitle')}`}>
+          {t('profile.setupSubtitle')}
+        </p>
+      </div>
+
+      {/* Emergency Fix for Stuck Users */}
+      {userProfile && userProfile.isProfileComplete === true && (
+        <div className="mb-6 p-4 bg-blue-500/20 border border-blue-500/50 rounded-lg max-w-2xl mx-auto">
+          <p className="text-blue-300 text-sm mb-3">
+            {t('profile.setupComplete')} - {currentLanguage === 'th' 
+              ? 'ระบบตรวจพบว่าข้อมูลของคุณครบถ้วนแล้ว คลิกปุ่มด้านล่างเพื่อไปยัง User Zone'
+              : 'System detected your profile is complete. Click below to go to User Zone'
+            }
           </p>
+          <button
+            type="button"
+            onClick={() => window.location.hash = '#profile/edit'}
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm"
+          >
+            {currentLanguage === 'th' ? 'ไปยัง User Zone' : 'Go to User Zone'}
+          </button>
         </div>
+      )}
 
-        {/* Form Container */}
-        <div className="glass-container rounded-2xl p-8 max-w-2xl mx-auto max-h-[80vh] overflow-y-auto">
-          {/* Emergency Fix for Stuck Users */}
-          {userProfile && userProfile.isProfileComplete === true && (
-            <div className="mb-6 p-4 bg-blue-500/20 border border-blue-500/50 rounded-lg">
-              <p className="text-blue-300 text-sm mb-3">
-                {t('profile.setupComplete')} - {currentLanguage === 'th' 
-                  ? 'ระบบตรวจพบว่าข้อมูลของคุณครบถ้วนแล้ว คลิกปุ่มด้านล่างเพื่อไปยัง User Zone'
-                  : 'System detected your profile is complete. Click below to go to User Zone'
-                }
-              </p>
-              <button
-                type="button"
-                onClick={() => window.location.hash = '#profile/edit'}
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm"
-              >
-                {currentLanguage === 'th' ? 'ไปยัง User Zone' : 'Go to User Zone'}
-              </button>
-            </div>
-          )}
+      {/* Error Message */}
+      {error && (
+        <div className="bg-red-500/20 border border-red-500/50 rounded-lg p-4 mb-6 max-w-2xl mx-auto">
+          <p className={`text-red-400 text-center ${getClass('body')}`}>{error}</p>
+        </div>
+      )}
 
-          {error && (
-            <div className="bg-red-500/20 border border-red-500/50 rounded-lg p-4 mb-6">
-              <p className={`text-red-400 text-center ${getClass('body')}`}>{error}</p>
-            </div>
-          )}
-
+      {/* Profile Form - Full Width */}
+      <div className="max-w-2xl mx-auto px-4">
+        <div className="glass-container rounded-2xl p-6 sm:p-8">
           <ProfileForm
             onSubmit={handleSubmit}
             isSubmitting={isSubmitting}
           />
         </div>
+      </div>
 
-        {/* Info Section */}
-        <div className="mt-8 text-center max-w-2xl mx-auto">
-          <div className="glass-container rounded-xl p-6">
-            <h3 className={`text-lg ${getClass('header')} text-white mb-3`}>
-              {t('profile.whyProfileNeeded')}
-            </h3>
-            <ul className={`text-white/80 text-sm space-y-2 text-left max-w-md mx-auto ${getClass('body')}`}>
-              <li className="flex items-start space-x-2">
-                <span className="text-[#FCB283] mt-1">•</span>
-                <span>{t('profile.reason1')}</span>
-              </li>
-              <li className="flex items-start space-x-2">
-                <span className="text-[#FCB283] mt-1">•</span>
-                <span>{t('profile.reason2')}</span>
-              </li>
-              <li className="flex items-start space-x-2">
-                <span className="text-[#FCB283] mt-1">•</span>
-                <span>{t('profile.reason3')}</span>
-              </li>
-            </ul>
-          </div>
+      {/* Info Section */}
+      <div className="mt-8 text-center max-w-2xl mx-auto px-4">
+        <div className="glass-container rounded-xl p-6">
+          <h3 className={`text-lg ${getClass('header')} text-white mb-3`}>
+            {t('profile.whyProfileNeeded')}
+          </h3>
+          <ul className={`text-white/80 text-sm space-y-2 text-left max-w-md mx-auto ${getClass('body')}`}>
+            <li className="flex items-start space-x-2">
+              <span className="text-[#FCB283] mt-1">•</span>
+              <span>{t('profile.reason1')}</span>
+            </li>
+            <li className="flex items-start space-x-2">
+              <span className="text-[#FCB283] mt-1">•</span>
+              <span>{t('profile.reason2')}</span>
+            </li>
+            <li className="flex items-start space-x-2">
+              <span className="text-[#FCB283] mt-1">•</span>
+              <span>{t('profile.reason3')}</span>
+            </li>
+          </ul>
         </div>
       </div>
     </div>
