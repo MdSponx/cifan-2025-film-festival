@@ -64,14 +64,6 @@ export const AdminProvider: React.FC<AdminProviderProps> = ({ children }) => {
         return;
       }
 
-      // Wait for email verification for admin access
-      if (!user.emailVerified) {
-        console.log('User email not verified, waiting for verification');
-        setIsAdmin(false);
-        setAdminProfile(null);
-        setIsLoading(false);
-        return;
-      }
 
       try {
         console.log('Checking admin status for user:', {
@@ -80,7 +72,6 @@ export const AdminProvider: React.FC<AdminProviderProps> = ({ children }) => {
           emailVerified: user.emailVerified
         });
         
-        // Check if user has admin role in profiles collection
         const profileDoc = await getDoc(doc(db, 'profiles', user.uid));
         
         if (profileDoc.exists()) {
@@ -88,42 +79,28 @@ export const AdminProvider: React.FC<AdminProviderProps> = ({ children }) => {
           console.log('Profile document found:', {
             role: profileData.role,
             fullNameEN: profileData.fullNameEN,
-            isAdmin: profileData.role === 'admin' || profileData.role === 'super-admin',
-            profileData: profileData
+            isAdmin: profileData.role === 'admin' || profileData.role === 'super-admin'
           });
           
           if (profileData.role === 'admin' || profileData.role === 'super-admin') {
             console.log('User has admin role, setting up admin access');
             
-            // Mark profile as complete for admin users if it has basic info
+            // CRITICAL: Set admin status IMMEDIATELY to prevent access denied
+            setIsAdmin(true);
+            setIsLoading(false); // Stop loading immediately
+            
             const isProfileComplete = !!(profileData.fullNameEN && profileData.email);
             
-            // Set admin status immediately to prevent access denied dialog
-            setIsAdmin(true);
-            
-            // User has admin role, now try to get detailed admin profile
             try {
               const adminDoc = await getDoc(doc(db, 'admins', user.uid));
               
               if (adminDoc.exists()) {
-                // User has detailed admin profile
                 const adminData = adminDoc.data() as AdminProfile;
-                console.log('Detailed admin profile found:', {
-                  adminRole: adminData.adminRole,
-                  adminLevel: adminData.adminLevel
-                });
-                
-                // Ensure admin profile is marked as complete
                 adminData.isProfileComplete = isProfileComplete;
-                
                 setAdminProfile(adminData);
-                
-                // Calculate permissions based on admin role and level
-                const calculatedPermissions = calculatePermissions(adminData);
-                setPermissions(calculatedPermissions);
+                setPermissions(calculatePermissions(adminData));
               } else {
-                console.log('No detailed admin profile found, creating basic admin profile');
-                // Create basic admin profile for users with admin role but no detailed profile
+                // Create basic admin profile
                 const basicAdminProfile: AdminProfile = {
                   uid: user.uid,
                   email: user.email!,
@@ -146,19 +123,18 @@ export const AdminProvider: React.FC<AdminProviderProps> = ({ children }) => {
                   updatedAt: new Date()
                 };
                 
-                console.log('Setting admin status to true with basic profile');
                 setAdminProfile(basicAdminProfile);
                 setPermissions(calculatePermissions(basicAdminProfile));
               }
             } catch (adminError) {
-              // If admin collection read fails, still create basic profile
-              console.log('Could not read detailed admin profile, creating basic profile:', adminError);
-              const basicAdminProfile: AdminProfile = {
+              console.log('Could not read detailed admin profile, creating fallback:', adminError);
+              // Create fallback profile with full permissions
+              const fallbackProfile: AdminProfile = {
                 uid: user.uid,
                 email: user.email!,
                 emailVerified: user.emailVerified,
                 photoURL: user.photoURL,
-                fullNameEN: profileData.fullNameEN || user.displayName || 'Admin User',
+                fullNameEN: profileData.fullNameEN || 'Admin User',
                 fullNameTH: profileData.fullNameTH,
                 birthDate: profileData.birthDate?.toDate() || new Date(),
                 age: profileData.age || 30,
@@ -170,39 +146,46 @@ export const AdminProvider: React.FC<AdminProviderProps> = ({ children }) => {
                 adminSince: new Date(),
                 permissions: [],
                 lastActiveAt: new Date(),
-                 isProfileComplete: isProfileComplete,
+                isProfileComplete: isProfileComplete,
                 createdAt: new Date(),
                 updatedAt: new Date()
               };
               
-              console.log('Setting admin status to true with fallback profile');
-              setAdminProfile(basicAdminProfile);
-              setPermissions(calculatePermissions(basicAdminProfile));
+              setAdminProfile(fallbackProfile);
+              setPermissions(calculatePermissions(fallbackProfile));
             }
           } else {
-            // Profile exists but user is not an admin
-            console.log('User profile exists but role is not admin:', profileData.role);
             setIsAdmin(false);
             setAdminProfile(null);
+            setIsLoading(false);
           }
         } else {
-          // Profile document doesn't exist
-          console.log('No profile document found for user');
           setIsAdmin(false);
           setAdminProfile(null);
+          setIsLoading(false);
         }
       } catch (error) {
         console.error('Error checking admin status:', error);
         setIsAdmin(false);
         setAdminProfile(null);
-      } finally {
-        console.log('Admin status check completed, isAdmin:', isAdmin);
         setIsLoading(false);
       }
     };
 
-    checkAdminStatus();
-  }, [user, isAuthenticated, user?.emailVerified]);
+    // Add timeout to prevent infinite loading
+    const timeoutId = setTimeout(() => {
+      console.log('Admin check timeout, stopping loading');
+      setIsLoading(false);
+    }, 5000);
+
+    checkAdminStatus().finally(() => {
+      clearTimeout(timeoutId);
+    });
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [user, isAuthenticated]); // Remove user?.emailVerified dependency to prevent infinite loop
 
   // Calculate permissions based on admin role and level
   const calculatePermissions = (profile: AdminProfile): AdminPermissions => {

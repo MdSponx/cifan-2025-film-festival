@@ -70,19 +70,23 @@ export const getPostAuthRedirectPath = (userProfile: UserProfile | null, fallbac
 export const shouldRedirectToProfileSetup = (userProfile: UserProfile | null): boolean => {
   if (!userProfile) return false;
   
-  // Admin users never need profile setup
+  // Admin users NEVER need profile setup (double protection)
   if (isAdminUser(userProfile)) {
+    console.log('shouldRedirectToProfileSetup: Admin user, never redirect to setup');
     return false;
   }
   
-  // PRIORITY 1: Trust database flag if it says complete
+  // For regular users, trust database flag first
   if (userProfile.isProfileComplete === true) {
+    console.log('shouldRedirectToProfileSetup: Database says complete, no redirect needed');
     console.log('shouldRedirectToProfileSetup: Database flag indicates complete profile, no setup needed');
     return false;
   }
   
-  // PRIORITY 2: Check actual field values only if flag is false
+  // Check actual field values only if flag is false
   const actuallyComplete = isProfileComplete(userProfile);
+  console.log('shouldRedirectToProfileSetup: Field check result:', actuallyComplete);
+  
   console.log('shouldRedirectToProfileSetup: Field validation result:', actuallyComplete);
   return !actuallyComplete;
 };

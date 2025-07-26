@@ -80,6 +80,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (isOnAuthPage) {
         // Small delay to ensure all state is settled
         setTimeout(() => {
+          console.log('=== AuthContext Navigation ===');
+          console.log('User:', user.email);
+          console.log('UserProfile role:', userProfile.role);
+          
           // Check email verification first
           if (!user.emailVerified) {
             console.log('AuthContext: Email not verified, redirecting to verification');
@@ -87,31 +91,31 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             return;
           }
           
-          // Admin users ALWAYS go to admin dashboard after email verification
+          // Admin users ALWAYS go to admin dashboard immediately
           if (isAdminUser(userProfile)) {
             console.log('AuthContext: Admin user detected, navigating to admin dashboard');
             window.location.hash = getPostAuthRedirectPath(userProfile);
             return;
           }
           
-          // PRIORITY: Trust database flag for regular users
+          // For regular users, prioritize database flag
           if (userProfile.isProfileComplete === true) {
-            console.log('AuthContext: Database indicates complete profile, redirecting to user zone');
+            console.log('AuthContext: Database says profile complete, redirecting to user zone');
             window.location.hash = getPostAuthRedirectPath(userProfile); // '#profile/edit'
             return;
           }
           
-          // Only redirect to setup if truly incomplete
+          // Check if profile needs completion (only for non-admin users)
           if (shouldRedirectToProfileSetup(userProfile)) {
             console.log('AuthContext: Profile incomplete, redirecting to profile setup');
             window.location.hash = '#profile/setup';
             return;
           }
           
-          // Fallback to user zone
-          console.log('AuthContext: Fallback redirect to user zone');
+          // Default to user zone
+          console.log('AuthContext: Default redirect to user zone');
           window.location.hash = getPostAuthRedirectPath(userProfile);
-        }, 100);
+        }, 150); // Slightly longer delay to allow AdminContext to initialize
       }
     }
   }, [user, userProfile, loading, hasNavigated]);

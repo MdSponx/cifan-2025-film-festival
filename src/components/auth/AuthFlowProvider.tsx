@@ -73,40 +73,37 @@ export const AuthFlowProvider: React.FC<AuthFlowProviderProps> = ({ children }) 
       currentHash: window.location.hash
     });
 
-    // Priority 1: Email verification (applies to all users)
+    // Priority 1: Email verification
     if (!isEmailVerified) {
       console.log('AuthFlowProvider: Email not verified, staying on verification page');
-      return; // Don't redirect, let user stay on verification page
+      return;
     }
 
-    // Priority 2: Admin users ALWAYS go to admin dashboard after email verification
+    // Priority 2: Admin users go directly to dashboard
     if (isAdminUser(userProfile)) {
       console.log('AuthFlowProvider: Admin user detected, navigating to admin dashboard');
-      const intent = getPostAuthRedirectPath(userProfile);
+      // Don't wait for AdminContext, go directly
+      window.location.hash = '#admin/dashboard';
       clearRedirectIntent();
-      window.location.hash = intent;
       return;
     }
     
-    // Priority 3: Trust database flag for regular users
+    // Priority 3: Regular users follow existing logic
     if (userProfile && userProfile.isProfileComplete === true) {
-      console.log('AuthFlowProvider: Database indicates complete profile, redirecting to user zone');
       const intent = redirectIntent || getPostAuthRedirectPath(userProfile);
       clearRedirectIntent();
       window.location.hash = intent;
       return;
     }
     
-    // Priority 4: Profile completion check for regular users only
     if (shouldRedirectToProfileSetup(userProfile)) {
       console.log('AuthFlowProvider: Regular user profile incomplete, redirecting to profile setup');
       window.location.hash = '#profile/setup';
       return;
     }
     
-    // Priority 5: Fallback for regular users
     const intent = redirectIntent || getPostAuthRedirectPath(userProfile);
-    console.log('AuthFlowProvider: Fallback redirect to:', intent);
+    console.log('AuthFlowProvider: Regular user with complete profile, redirecting to:', intent);
     clearRedirectIntent();
     window.location.hash = intent;
   };

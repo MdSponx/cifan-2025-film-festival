@@ -15,7 +15,7 @@ const AdminProtectedRoute: React.FC<AdminProtectedRouteProps> = ({
 }) => {
   const { i18n } = useTranslation();
   const { getClass } = useTypography();
-  const { user } = useAuth();
+  const { user, userProfile } = useAuth();
   const { isAdmin, isLoading, permissions, checkPermission, hasAnyPermission } = useAdmin();
   const currentLanguage = i18n.language as 'en' | 'th';
 
@@ -64,8 +64,22 @@ const AdminProtectedRoute: React.FC<AdminProtectedRouteProps> = ({
 
   // Check if user is admin
   if (!isAdmin) {
+    // Fallback check from userProfile in AuthContext
+    const isAdminFromProfile = userProfile && (userProfile.role === 'admin' || userProfile.role === 'super-admin');
+    
+    if (isAdminFromProfile) {
+      console.log('AdminProtectedRoute: Fallback admin check passed, allowing access');
+      // If AuthContext says user is admin but AdminContext isn't ready, allow access
+      return <>{children}</>;
+    }
+    
     console.log('AdminProtectedRoute: User is not admin, blocking access');
-    console.log('AdminProtectedRoute: Current admin state:', { isAdmin, isLoading, user: user?.email });
+    console.log('AdminProtectedRoute: Current admin state:', { 
+      isAdmin, 
+      isLoading, 
+      user: user?.email,
+      userProfileRole: userProfile?.role 
+    });
     if (onUnauthorized) {
       onUnauthorized();
     }
