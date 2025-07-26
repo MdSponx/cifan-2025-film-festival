@@ -268,6 +268,9 @@ const SmartSignUpPage = () => {
             <div>
               <label className={`block text-white/90 ${getClass('body')} mb-2`}>
                 {currentContent.firstName} <span className="text-red-400">*</span>
+                <span className="text-white/60 text-xs block mt-1">
+                  {currentLanguage === 'th' ? 'เป็นภาษาอังกฤษ' : 'In English'}
+                </span>
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -280,6 +283,7 @@ const SmartSignUpPage = () => {
                   onChange={handleInputChange}
                   className={`w-full pl-10 pr-4 py-3 rounded-lg bg-white/10 border ${formErrors.firstName ? 'border-red-400' : 'border-white/20'} text-white placeholder-white/50 focus:border-[#FCB283] focus:outline-none transition-colors ${getClass('body')}`}
                   required
+                  placeholder="John"
                 />
               </div>
               <ErrorMessage error={formErrors.firstName} />
@@ -288,6 +292,9 @@ const SmartSignUpPage = () => {
             <div>
               <label className={`block text-white/90 ${getClass('body')} mb-2`}>
                 {currentContent.lastName} <span className="text-red-400">*</span>
+                <span className="text-white/60 text-xs block mt-1">
+                  {currentLanguage === 'th' ? 'เป็นภาษาอังกฤษ' : 'In English'}
+                </span>
               </label>
               <input
                 type="text"
@@ -296,6 +303,7 @@ const SmartSignUpPage = () => {
                 onChange={handleInputChange}
                 className={`w-full px-4 py-3 rounded-lg bg-white/10 border ${formErrors.lastName ? 'border-red-400' : 'border-white/20'} text-white placeholder-white/50 focus:border-[#FCB283] focus:outline-none transition-colors ${getClass('body')}`}
                 required
+                placeholder="Smith"
               />
               <ErrorMessage error={formErrors.lastName} />
             </div>
