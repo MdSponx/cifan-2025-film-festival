@@ -171,9 +171,9 @@ export const useImprovedEmailVerification = (
         ...prev,
         isChecking: false,
         isVerified,
-        success: isVerified && !prev.isVerified // Only show success message on status change
+        success: isVerified && !prev.isVerified && isVerified // Show success when newly verified
           ? (language === 'th' ? 'อีเมลได้รับการยืนยันเรียบร้อยแล้ว!' : 'Email verified successfully!')
-          : null,
+          : prev.success, // Keep existing success message if already set
         autoCheckEnabled: !isVerified // Stop auto-checking when verified
       }));
 

@@ -115,11 +115,11 @@ const ImprovedVerificationPage = () => {
 
   // Show success animation when verified
   useEffect(() => {
-    if (isVerified && !showSuccess) {
+    if (isVerified && !showSuccess && !isRedirecting) {
       setShowSuccess(true);
       setIsRedirecting(true);
     }
-  }, [isVerified, showSuccess]);
+  }, [isVerified, showSuccess, isRedirecting]);
 
   // Clear messages after some time
   useEffect(() => {
