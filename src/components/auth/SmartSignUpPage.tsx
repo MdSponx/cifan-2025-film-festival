@@ -159,6 +159,11 @@ const SmartSignUpPage = () => {
       const displayName = `${formData.firstName} ${formData.lastName}`;
       await authService.signUp(formData.email, formData.password, displayName);
       setSubmitSuccess(true);
+      
+      // Scroll to top when showing success page
+      setTimeout(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }, 100);
     } catch (error) {
       const authError = error as AuthError;
       setFormErrors({ submit: authError.message });
@@ -206,7 +211,12 @@ const SmartSignUpPage = () => {
                 variant="primary" 
                 size="medium" 
                 icon="📧"
-                onClick={() => window.location.hash = '#auth/verify-email'}
+                onClick={() => {
+                  window.location.hash = '#auth/verify-email';
+                  setTimeout(() => {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }, 100);
+                }}
               >
                 {currentLanguage === 'th' ? 'ยืนยันอีเมล' : 'Verify Email'}
               </AnimatedButton>
