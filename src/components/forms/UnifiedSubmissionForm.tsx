@@ -14,7 +14,7 @@ import CrewManagement from './CrewManagement';
 import AgreementCheckboxes from './AgreementCheckboxes';
 import NationalitySelector from '../ui/NationalitySelector';
 import AnimatedButton from '../ui/AnimatedButton';
-import SubmissionProgress from '../ui/SubmissionProgress';
+import SubmissionProgress as SubmissionProgressComponent from '../ui/SubmissionProgress';
 import ErrorMessage from './ErrorMessage';
 
 interface UnifiedSubmissionFormProps {
@@ -388,7 +388,7 @@ const UnifiedSubmissionForm: React.FC<UnifiedSubmissionFormProps> = ({ category 
     return (
       <div className="min-h-screen bg-[#110D16] pt-24 pb-12 px-4">
         <div className="max-w-4xl mx-auto">
-          <SubmissionProgress 
+          <SubmissionProgressComponent 
             progress={submissionState.progress}
             className="max-w-2xl mx-auto"
           />
