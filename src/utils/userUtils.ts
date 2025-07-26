@@ -78,13 +78,6 @@ export const shouldRedirectToProfileSetup = (userProfile: UserProfile | null): b
   
   // For regular users, trust database flag first
   if (userProfile.isProfileComplete === true) {
-    console.log('shouldRedirectToProfileSetup: Database says complete, no redirect needed');
-    console.log('shouldRedirectToProfileSetup: Database flag indicates complete profile, no setup needed');
-    return false;
-  }
-  
-  // Check actual field values only if flag is false
-  const actuallyComplete = isProfileComplete(userProfile);
   console.log('shouldRedirectToProfileSetup: Field check result:', actuallyComplete);
   
   console.log('shouldRedirectToProfileSetup: Field validation result:', actuallyComplete);
