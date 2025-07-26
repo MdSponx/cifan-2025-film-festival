@@ -374,9 +374,12 @@ const ImprovedVerificationPage = () => {
         duration={2000}
         onComplete={() => {
           setShowSuccess(false);
-          // Handle redirect after animation completes
-          console.log('Success animation completed, redirecting...');
-          handlePostSignIn();
+          // For new users after email verification, go directly to profile setup
+          console.log('Success animation completed, redirecting to profile setup...');
+          window.location.hash = '#profile/setup';
+          setTimeout(() => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }, 100);
         }}
       />
 
