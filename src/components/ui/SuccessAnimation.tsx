@@ -14,27 +14,30 @@ const SuccessAnimation: React.FC<SuccessAnimationProps> = ({
   title,
   message,
   onComplete,
-  duration = 3000
+  duration = 2000
 }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [hasCompleted, setHasCompleted] = useState(false);
 
   useEffect(() => {
-    if (show) {
+    if (show && !hasCompleted) {
       setIsVisible(true);
       setTimeout(() => setIsAnimating(true), 100);
       
-      if (onComplete) {
+      // Single animation cycle then complete
+      setTimeout(() => {
+        setIsAnimating(false);
+        setHasCompleted(true);
         setTimeout(() => {
-          setIsAnimating(false);
-          setTimeout(() => {
-            setIsVisible(false);
+          setIsVisible(false);
+          if (onComplete) {
             onComplete();
-          }, 300);
-        }, duration);
-      }
+          }
+        }, 300);
+      }, duration);
     }
-  }, [show, duration, onComplete]);
+  }, [show, duration, onComplete, hasCompleted]);
 
   if (!isVisible) return null;
 

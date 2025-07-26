@@ -106,11 +106,11 @@ export const useImprovedEmailVerification = (
   // Auto-redirect when verified
   useEffect(() => {
     if (state.isVerified && user) {
-      // Small delay to show success state, then redirect
-      setTimeout(() => {
-        console.log('Email verified, redirecting...');
-        handlePostSignIn();
-      }, 1500);
+      // Stop auto-checking immediately when verified
+      setState(prev => ({ ...prev, autoCheckEnabled: false }));
+      
+      // Redirect will be handled by SuccessAnimation onComplete
+      console.log('Email verified, success animation will handle redirect');
     }
   }, [state.isVerified, user, handlePostSignIn]);
 

@@ -350,9 +350,12 @@ const ImprovedVerificationPage = () => {
         show={showSuccess}
         title={currentContent.verified}
         message={currentContent.verifiedMessage}
+        duration={2000}
         onComplete={() => {
           setShowSuccess(false);
-          // Redirect is handled by useAuthFlow
+          // Handle redirect after animation completes
+          console.log('Success animation completed, redirecting...');
+          handlePostSignIn();
         }}
       />
 
