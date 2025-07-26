@@ -95,6 +95,12 @@ const AdminZoneSidebar: React.FC<AdminZoneSidebarProps> = ({
       label: currentContent.applicationsGallery,
       href: '#admin/gallery'
     }] : []),
+    ...(checkPermission('canViewApplications') ? [{
+      id: 'admin/gallery',
+      icon: <Grid size={20} />,
+      label: currentContent.applicationsGallery,
+      href: '#admin/gallery'
+    }] : []),
     ...(checkPermission('canManageUsers') ? [{
       id: 'admin/partners',
       icon: <Building2 size={20} />,
