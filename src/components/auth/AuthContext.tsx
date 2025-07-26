@@ -70,22 +70,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   // Handle automatic navigation after authentication
   useEffect(() => {
-    if (user && userProfile && !loading && !hasNavigated) {
+    if (user && userProfile && !loading && !hasNavigated && user.emailVerified) {
       setHasNavigated(true);
       
       // Check if we're on an auth page and need to redirect
       const currentHash = window.location.hash;
-      const isOnAuthPage = currentHash.includes('#auth/') || currentHash === '#profile/setup';
+      const isOnAuthPage = currentHash.includes('#auth/') || currentHash === '#profile/setup' || currentHash === '#home' || currentHash === '' || currentHash === '#';
       
       if (isOnAuthPage) {
         // Small delay to ensure all state is settled
         setTimeout(() => {
-          // Check email verification first
-          if (!user.emailVerified) {
-            window.location.hash = '#auth/verify-email';
-            return;
-          }
-          
           // Admin users ALWAYS go to admin dashboard after email verification
           if (isAdminUser(userProfile)) {
             console.log('AuthContext: Admin user detected, navigating to admin dashboard');
@@ -106,7 +100,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         }, 100);
       }
     }
-  }, [user, userProfile, loading, hasNavigated]);
+  }, [user, userProfile, loading, hasNavigated, user?.emailVerified]);
   const refreshUserProfile = async () => {
     if (user) {
       const profile = await profileService.getProfile(user.uid);

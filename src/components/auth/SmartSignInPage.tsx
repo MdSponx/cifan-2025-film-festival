@@ -130,9 +130,12 @@ const SmartSignInPage = () => {
     try {
       await authService.signIn(formData.email, formData.password);
       
-      // Use AuthFlowProvider to handle post-sign-in navigation
-      // This ensures proper role-based redirection and profile completion checks
-      handlePostSignIn();
+      // Small delay to ensure auth state is updated
+      setTimeout(() => {
+        // Use AuthFlowProvider to handle post-sign-in navigation
+        // This ensures proper role-based redirection and profile completion checks
+        handlePostSignIn();
+      }, 500);
     } catch (error) {
       const authError = error as AuthError;
       setFormErrors({ submit: authError.message });

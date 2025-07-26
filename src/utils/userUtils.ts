@@ -82,3 +82,13 @@ export const canAccessProfileProtectedRoute = (userProfile: UserProfile | null):
   // Regular users need complete profiles (check actual fields)
   return isProfileComplete(userProfile);
 };
+
+/**
+ * Check if user should be automatically redirected to admin zone
+ */
+export const shouldRedirectToAdminZone = (userProfile: UserProfile | null): boolean => {
+  if (!userProfile) return false;
+  
+  // Only redirect verified admin users
+  return isAdminUser(userProfile) && userProfile.emailVerified;
+};

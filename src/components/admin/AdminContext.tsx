@@ -64,6 +64,15 @@ export const AdminProvider: React.FC<AdminProviderProps> = ({ children }) => {
         return;
       }
 
+      // Wait for email verification for admin access
+      if (!user.emailVerified) {
+        console.log('User email not verified, waiting for verification');
+        setIsAdmin(false);
+        setAdminProfile(null);
+        setIsLoading(false);
+        return;
+      }
+
       try {
         console.log('Checking admin status for user:', {
           uid: user.uid,
@@ -193,7 +202,7 @@ export const AdminProvider: React.FC<AdminProviderProps> = ({ children }) => {
     };
 
     checkAdminStatus();
-  }, [user, isAuthenticated, isAdmin]);
+  }, [user, isAuthenticated, user?.emailVerified]);
 
   // Calculate permissions based on admin role and level
   const calculatePermissions = (profile: AdminProfile): AdminPermissions => {

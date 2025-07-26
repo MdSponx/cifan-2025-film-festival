@@ -82,7 +82,7 @@ export const AuthFlowProvider: React.FC<AuthFlowProviderProps> = ({ children }) 
     // Priority 2: Admin users ALWAYS go to admin dashboard after email verification
     if (isAdminUser(userProfile)) {
       console.log('AuthFlowProvider: Admin user detected, navigating to admin dashboard');
-      const intent = redirectIntent && redirectIntent.startsWith('#admin/') ? redirectIntent : getPostAuthRedirectPath(userProfile);
+      const intent = getPostAuthRedirectPath(userProfile);
       clearRedirectIntent();
       window.location.hash = intent;
       return;

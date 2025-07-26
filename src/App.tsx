@@ -121,7 +121,7 @@ function App() {
         return <ComingSoonPage />;
       case 'admin/dashboard':
         return (
-          <ProtectedRoute requireEmailVerification={true}>
+          <ProtectedRoute requireEmailVerification={true} requireProfileComplete={false}>
             <AdminProtectedRoute>
               <AdminZoneLayout currentPage="admin/dashboard">
                 <ApplicationsDashboardPage />
@@ -131,7 +131,7 @@ function App() {
         );
       case 'admin/gallery':
         return (
-          <ProtectedRoute requireEmailVerification={true}>
+          <ProtectedRoute requireEmailVerification={true} requireProfileComplete={false}>
             <AdminProtectedRoute>
               <AdminZoneLayout currentPage="admin/gallery">
                 <AdminGalleryPage />
@@ -141,7 +141,7 @@ function App() {
         );
       case 'admin/profile':
         return (
-          <ProtectedRoute requireEmailVerification={true}>
+          <ProtectedRoute requireEmailVerification={true} requireProfileComplete={false}>
             <AdminProtectedRoute>
               <AdminZoneLayout currentPage="admin/profile">
                 <AdminProfilePage />
@@ -176,7 +176,7 @@ function App() {
         if (currentPage.startsWith('admin/application/')) {
           const applicationId = currentPage.replace('admin/application/', '');
           return (
-            <ProtectedRoute requireEmailVerification={true}>
+            <ProtectedRoute requireEmailVerification={true} requireProfileComplete={false}>
               <AdminProtectedRoute>
                 <AdminZoneLayout currentPage="admin/application">
                   <AdminApplicationDetailPage applicationId={applicationId} />

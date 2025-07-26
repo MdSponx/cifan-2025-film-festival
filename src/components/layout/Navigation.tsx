@@ -195,7 +195,7 @@ const Navigation = () => {
                         </button>
                         
                         {/* Admin Zone Access - Only show for admin users */}
-                        {userProfile?.role === 'admin' || userProfile?.role === 'super-admin' ? (
+                        {(userProfile?.role === 'admin' || userProfile?.role === 'super-admin') && user?.emailVerified ? (
                           <button 
                             onClick={() => {
                               setShowAuthMenu(false);
@@ -319,7 +319,7 @@ const Navigation = () => {
                   </button>
                   
                   {/* Admin Zone Access - Mobile */}
-                  {userProfile?.role === 'admin' || userProfile?.role === 'super-admin' ? (
+                  {(userProfile?.role === 'admin' || userProfile?.role === 'super-admin') && user?.emailVerified ? (
                     <button 
                       onClick={() => {
                         setIsOpen(false);
