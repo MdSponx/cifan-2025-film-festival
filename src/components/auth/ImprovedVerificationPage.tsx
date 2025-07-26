@@ -34,6 +34,27 @@ const ImprovedVerificationPage = () => {
 
   const [showSuccess, setShowSuccess] = useState(false);
   const [isRedirecting, setIsRedirecting] = useState(false);
+  const [hasCheckedInitialStatus, setHasCheckedInitialStatus] = useState(false);
+
+  // Check verification status immediately when component mounts
+  // This handles the case when user clicks verification link in email
+  useEffect(() => {
+    const checkInitialStatus = async () => {
+      if (user && !hasCheckedInitialStatus) {
+        setHasCheckedInitialStatus(true);
+        
+        // Small delay to ensure auth state is settled
+        setTimeout(async () => {
+          const isCurrentlyVerified = await checkVerificationStatus();
+          if (isCurrentlyVerified) {
+            console.log('Email verification detected on page load, showing success animation');
+          }
+        }, 500);
+      }
+    };
+
+    checkInitialStatus();
+  }, [user, hasCheckedInitialStatus, checkVerificationStatus]);
 
   const content = {
     th: {

@@ -161,11 +161,17 @@ export const useImprovedEmailVerification = (
       
       const isVerified = user.emailVerified;
       
+      console.log('Email verification check result:', {
+        email: user.email,
+        isVerified,
+        previousState: state.isVerified
+      });
+      
       setState(prev => ({
         ...prev,
         isChecking: false,
         isVerified,
-        success: isVerified 
+        success: isVerified && !prev.isVerified // Only show success message on status change
           ? (language === 'th' ? 'อีเมลได้รับการยืนยันเรียบร้อยแล้ว!' : 'Email verified successfully!')
           : null,
         autoCheckEnabled: !isVerified // Stop auto-checking when verified
@@ -173,6 +179,7 @@ export const useImprovedEmailVerification = (
 
       return isVerified;
     } catch (error: any) {
+      console.error('Email verification check error:', error);
       setState(prev => ({
         ...prev,
         isChecking: false,
