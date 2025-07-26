@@ -13,7 +13,7 @@ const ImprovedVerificationPage = () => {
   const { i18n } = useTranslation();
   const { getClass } = useTypography();
   const { user } = useAuth();
-  const { currentStep } = useAuthFlow();
+  const { currentStep, handlePostSignIn } = useAuthFlow();
   const currentLanguage = i18n.language as 'en' | 'th';
 
   const {
