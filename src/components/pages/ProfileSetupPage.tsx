@@ -24,6 +24,15 @@ const ProfileSetupPage: React.FC = () => {
     }
   }, [userProfile]);
 
+  // Add immediate redirect for users with complete profiles
+  React.useEffect(() => {
+    // If database says profile is complete, redirect immediately
+    if (userProfile && userProfile.isProfileComplete === true && !isAdminUser(userProfile)) {
+      console.log('ProfileSetupPage: Database indicates complete profile, redirecting to user zone');
+      window.location.hash = '#profile/edit';
+    }
+  }, [userProfile]);
+
   // Don't render anything for admin users while redirecting
   if (isAdminUser(userProfile)) {
     return (
@@ -31,6 +40,18 @@ const ProfileSetupPage: React.FC = () => {
         <div className="glass-container rounded-2xl p-8 text-center max-w-md mx-auto">
           <div className="loading-spinner mx-auto mb-4"></div>
           <p className="text-white">Redirecting to admin dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't render for users with complete profiles while redirecting
+  if (userProfile && userProfile.isProfileComplete === true && !isAdminUser(userProfile)) {
+    return (
+      <div className="min-h-screen bg-[#110D16] flex items-center justify-center px-4">
+        <div className="glass-container rounded-2xl p-8 text-center max-w-md mx-auto">
+          <div className="loading-spinner mx-auto mb-4"></div>
+          <p className="text-white">Redirecting to user zone...</p>
         </div>
       </div>
     );
@@ -92,6 +113,25 @@ const ProfileSetupPage: React.FC = () => {
 
         {/* Form Container */}
         <div className="glass-container rounded-2xl p-8 max-w-2xl mx-auto max-h-[80vh] overflow-y-auto">
+          {/* Emergency Fix for Stuck Users */}
+          {userProfile && userProfile.isProfileComplete === true && (
+            <div className="mb-6 p-4 bg-blue-500/20 border border-blue-500/50 rounded-lg">
+              <p className="text-blue-300 text-sm mb-3">
+                {t('profile.setupComplete')} - {currentLanguage === 'th' 
+                  ? 'ระบบตรวจพบว่าข้อมูลของคุณครบถ้วนแล้ว คลิกปุ่มด้านล่างเพื่อไปยัง User Zone'
+                  : 'System detected your profile is complete. Click below to go to User Zone'
+                }
+              </p>
+              <button
+                type="button"
+                onClick={() => window.location.hash = '#profile/edit'}
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm"
+              >
+                {currentLanguage === 'th' ? 'ไปยัง User Zone' : 'Go to User Zone'}
+              </button>
+            </div>
+          )}
+
           {error && (
             <div className="bg-red-500/20 border border-red-500/50 rounded-lg p-4 mb-6">
               <p className={`text-red-400 text-center ${getClass('body')}`}>{error}</p>

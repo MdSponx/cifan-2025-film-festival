@@ -70,16 +70,23 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   // Handle automatic navigation after authentication
   useEffect(() => {
-    if (user && userProfile && !loading && !hasNavigated && user.emailVerified) {
+    if (user && userProfile && !loading && !hasNavigated) {
       setHasNavigated(true);
       
       // Check if we're on an auth page and need to redirect
       const currentHash = window.location.hash;
-      const isOnAuthPage = currentHash.includes('#auth/') || currentHash === '#profile/setup' || currentHash === '#home' || currentHash === '' || currentHash === '#';
+      const isOnAuthPage = currentHash.includes('#auth/') || currentHash === '#profile/setup';
       
       if (isOnAuthPage) {
         // Small delay to ensure all state is settled
         setTimeout(() => {
+          // Check email verification first
+          if (!user.emailVerified) {
+            console.log('AuthContext: Email not verified, redirecting to verification');
+            window.location.hash = '#auth/verify-email';
+            return;
+          }
+          
           // Admin users ALWAYS go to admin dashboard after email verification
           if (isAdminUser(userProfile)) {
             console.log('AuthContext: Admin user detected, navigating to admin dashboard');
@@ -87,20 +94,27 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             return;
           }
           
-          // Regular users: check if profile needs completion
+          // PRIORITY: Trust database flag for regular users
+          if (userProfile.isProfileComplete === true) {
+            console.log('AuthContext: Database indicates complete profile, redirecting to user zone');
+            window.location.hash = getPostAuthRedirectPath(userProfile); // '#profile/edit'
+            return;
+          }
+          
+          // Only redirect to setup if truly incomplete
           if (shouldRedirectToProfileSetup(userProfile)) {
             console.log('AuthContext: Profile incomplete, redirecting to profile setup');
             window.location.hash = '#profile/setup';
             return;
           }
           
-          // Default to user zone profile page for complete profiles
-          console.log('AuthContext: Profile complete, redirecting to profile edit');
+          // Fallback to user zone
+          console.log('AuthContext: Fallback redirect to user zone');
           window.location.hash = getPostAuthRedirectPath(userProfile);
         }, 100);
       }
     }
-  }, [user, userProfile, loading, hasNavigated, user?.emailVerified]);
+  }, [user, userProfile, loading, hasNavigated]);
   const refreshUserProfile = async () => {
     if (user) {
       const profile = await profileService.getProfile(user.uid);

@@ -24,20 +24,31 @@ export const isProfileComplete = (userProfile: UserProfile | null): boolean => {
     return true;
   }
   
-  // Regular users need all required fields with meaningful values
-  const hasRequiredFields = !!(
+  // Check basic required fields
+  const hasBasicFields = !!(
     userProfile.fullNameEN && 
     userProfile.fullNameEN.trim().length > 0 &&
     userProfile.email && 
     userProfile.email.trim().length > 0 &&
     userProfile.phoneNumber && 
-    userProfile.phoneNumber.trim().length > 0 &&
-    userProfile.birthDate &&
-    userProfile.birthDate.getFullYear() > 1900 && // Reasonable birth year
-    userProfile.birthDate.getFullYear() < new Date().getFullYear()
+    userProfile.phoneNumber.trim().length > 0
   );
 
-  return hasRequiredFields;
+  // Handle birthDate - support both Date and Firestore Timestamp
+  let hasBirthDate = false;
+  if (userProfile.birthDate) {
+    if (userProfile.birthDate instanceof Date) {
+      const year = userProfile.birthDate.getFullYear();
+      hasBirthDate = year >= 1900 && year <= new Date().getFullYear();
+    } else if (userProfile.birthDate.toDate && typeof userProfile.birthDate.toDate === 'function') {
+      // Handle Firestore Timestamp
+      const date = (userProfile.birthDate as any).toDate();
+      const year = date.getFullYear();
+      hasBirthDate = year >= 1900 && year <= new Date().getFullYear();
+    }
+  }
+
+  return hasBasicFields && hasBirthDate;
 };
 
 /**
@@ -64,8 +75,16 @@ export const shouldRedirectToProfileSetup = (userProfile: UserProfile | null): b
     return false;
   }
   
-  // Regular users need profile setup if profile is incomplete (check actual fields)
-  return !isProfileComplete(userProfile);
+  // PRIORITY 1: Trust database flag if it says complete
+  if (userProfile.isProfileComplete === true) {
+    console.log('shouldRedirectToProfileSetup: Database flag indicates complete profile, no setup needed');
+    return false;
+  }
+  
+  // PRIORITY 2: Check actual field values only if flag is false
+  const actuallyComplete = isProfileComplete(userProfile);
+  console.log('shouldRedirectToProfileSetup: Field validation result:', actuallyComplete);
+  return !actuallyComplete;
 };
 
 /**

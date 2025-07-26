@@ -88,16 +88,25 @@ export const AuthFlowProvider: React.FC<AuthFlowProviderProps> = ({ children }) 
       return;
     }
     
-    // Priority 3: Profile completion for regular users only
+    // Priority 3: Trust database flag for regular users
+    if (userProfile && userProfile.isProfileComplete === true) {
+      console.log('AuthFlowProvider: Database indicates complete profile, redirecting to user zone');
+      const intent = redirectIntent || getPostAuthRedirectPath(userProfile);
+      clearRedirectIntent();
+      window.location.hash = intent;
+      return;
+    }
+    
+    // Priority 4: Profile completion check for regular users only
     if (shouldRedirectToProfileSetup(userProfile)) {
       console.log('AuthFlowProvider: Regular user profile incomplete, redirecting to profile setup');
       window.location.hash = '#profile/setup';
       return;
     }
     
-    // Priority 4: Regular users with complete profiles go to user zone
+    // Priority 5: Fallback for regular users
     const intent = redirectIntent || getPostAuthRedirectPath(userProfile);
-    console.log('AuthFlowProvider: Regular user with complete profile, redirecting to:', intent);
+    console.log('AuthFlowProvider: Fallback redirect to:', intent);
     clearRedirectIntent();
     window.location.hash = intent;
   };

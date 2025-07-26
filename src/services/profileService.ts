@@ -261,20 +261,32 @@ export class ProfileService {
       return true;
     }
     
-    // Regular users need all required fields with meaningful values
+    // Check required fields
     const hasRequiredFields = !!(
       profile.fullNameEN && 
       profile.fullNameEN.trim().length > 0 &&
       profile.email && 
       profile.email.trim().length > 0 &&
       profile.phoneNumber && 
-      profile.phoneNumber.trim().length > 0 &&
-      profile.birthDate &&
-      profile.birthDate.getFullYear() > 1900 && // Reasonable birth year
-      profile.birthDate.getFullYear() < new Date().getFullYear()
+      profile.phoneNumber.trim().length > 0
     );
 
-    return hasRequiredFields;
+    // Handle birthDate - support Firestore Timestamp
+    let hasBirthDate = false;
+    if (profile.birthDate) {
+      let birthYear;
+      if (profile.birthDate instanceof Date) {
+        birthYear = profile.birthDate.getFullYear();
+      } else if ((profile.birthDate as any).toDate) {
+        birthYear = (profile.birthDate as any).toDate().getFullYear();
+      }
+      
+      if (birthYear) {
+        hasBirthDate = birthYear >= 1900 && birthYear <= new Date().getFullYear();
+      }
+    }
+
+    return hasRequiredFields && hasBirthDate;
   }
 
   /**

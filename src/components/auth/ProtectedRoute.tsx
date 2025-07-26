@@ -79,6 +79,12 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 
   // Check profile completion if required
   if (requireProfileComplete && !isAdminUser(userProfile) && !canAccessProfileProtectedRoute(userProfile)) {
+    // Additional check: trust database flag
+    if (userProfile && userProfile.isProfileComplete === true) {
+      console.log('ProtectedRoute: Database indicates complete profile, allowing access');
+      return <>{children}</>;
+    }
+    
     // Redirect to profile setup
     setTimeout(() => {
       window.location.hash = '#profile/setup';
