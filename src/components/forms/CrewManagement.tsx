@@ -408,6 +408,63 @@ const CrewManagement: React.FC<CrewManagementProps> = ({
                 {!isWorldForm && !window.location.hash.includes('future') && (currentLanguage === 'th' ? 'อายุ 12-18 ปี (นักเรียนมัธยมศึกษา)' : 'Age 12-18 years (High school students)')}
                 {isWorldForm && (currentLanguage === 'th' ? 'ไม่จำกัดอายุ (ประชาชนทั่วไป)' : 'No age limit (General public)')}
               </p>
+              {/* Age validation warning */}
+              {crewFormData.age && (() => {
+                const age = parseInt(crewFormData.age);
+                if (isNaN(age)) return null;
+                
+                let isValidAge = true;
+                let warningMessage = '';
+                
+                if (!isWorldForm) {
+                  if (window.location.hash.includes('future')) {
+                    // Future category: 18-25
+                    if (age < 18) {
+                      isValidAge = false;
+                      warningMessage = currentLanguage === 'th' 
+                        ? 'อายุต้องไม่น้อยกว่า 18 ปี สำหรับหมวดอนาคต' 
+                        : 'Age must be at least 18 years for Future category';
+                    } else if (age > 25) {
+                      isValidAge = false;
+                      warningMessage = currentLanguage === 'th' 
+                        ? 'อายุต้องไม่เกิน 25 ปี สำหรับหมวดอนาคต' 
+                        : 'Age must not exceed 25 years for Future category';
+                    }
+                  } else {
+                    // Youth category: 12-18
+                    if (age < 12) {
+                      isValidAge = false;
+                      warningMessage = currentLanguage === 'th' 
+                        ? 'อายุต้องไม่น้อยกว่า 12 ปี สำหรับหมวดเยาวชน' 
+                        : 'Age must be at least 12 years for Youth category';
+                    } else if (age > 18) {
+                      isValidAge = false;
+                      warningMessage = currentLanguage === 'th' 
+                        ? 'อายุต้องไม่เกิน 18 ปี สำหรับหมวดเยาวชน' 
+                        : 'Age must not exceed 18 years for Youth category';
+                    }
+                  }
+                } else {
+                  // World category: 20+
+                  if (age < 20) {
+                    isValidAge = false;
+                    warningMessage = currentLanguage === 'th' 
+                      ? 'อายุต้องไม่น้อยกว่า 20 ปี สำหรับหมวดโลก' 
+                      : 'Age must be at least 20 years for World category';
+                  }
+                }
+                
+                if (!isValidAge && warningMessage) {
+                  return (
+                    <p className={`text-xs ${getClass('body')} text-red-400 mt-1 flex items-center`}>
+                      <span className="mr-1">⚠️</span>
+                      {warningMessage}
+                    </p>
+                  );
+                }
+                
+                return null;
+              })()}
               <ErrorMessage error={crewFormErrors.age} />
             </div>
             
