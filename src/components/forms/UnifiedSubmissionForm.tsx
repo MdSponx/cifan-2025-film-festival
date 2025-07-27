@@ -235,8 +235,8 @@ const UnifiedSubmissionForm: React.FC<UnifiedSubmissionFormProps> = ({ category 
 
     // Film Information
     if (!formData.filmTitle.trim()) errors.filmTitle = validationMessages.required;
-    // Thai Film Title is only required when nationality is "Thai"
-    if (isThaiNationality && (category !== 'world' ? (formData as YouthFormData | FutureFormData).nationality === 'Thailand' : true) && !formData.filmTitleTh?.trim()) {
+    // Thai Film Title is only required when nationality is "Thailand"
+    if (category !== 'world' && (formData as YouthFormData | FutureFormData).nationality === 'Thailand' && !formData.filmTitleTh?.trim()) {
       errors.filmTitleTh = validationMessages.required;
     }
     if (!formData.genres || formData.genres.length === 0) errors.genres = validationMessages.required;
@@ -515,7 +515,7 @@ const UnifiedSubmissionForm: React.FC<UnifiedSubmissionFormProps> = ({ category 
                   <ErrorMessage error={formErrors.filmTitle} />
                 </div>
                 
-                {isThaiNationality && (
+                {(category !== 'world' && (formData as YouthFormData | FutureFormData).nationality === 'Thailand') && (
                   <div>
                     <label className={`block text-white/90 ${getClass('body')} mb-2`}>
                       {currentContent.filmTitleTh} <span className="text-red-400">*</span>
