@@ -465,113 +465,15 @@ const UnifiedSubmissionForm: React.FC<UnifiedSubmissionFormProps> = ({ category 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-8">
           
-          {/* Section 1: Film Information */}
-          <FormSection title={currentContent.filmInfoTitle} icon="🎬">
-            <div className="space-y-6">
-              {/* Film Titles */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className={`block text-white/90 ${getClass('body')} mb-2`}>
-                    {currentContent.filmTitle} <span className="text-red-400">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.filmTitle}
-                    onChange={(e) => handleInputChange('filmTitle', e.target.value)}
-                    className={`w-full p-3 rounded-lg bg-white/10 border ${formErrors.filmTitle ? 'border-red-400 error-field' : 'border-white/20'} text-white placeholder-white/50 focus:border-[#FCB283] focus:outline-none`}
-                  />
-                  <ErrorMessage error={formErrors.filmTitle} />
-                </div>
-                
-                {isThaiNationality && (
-                  <div>
-                    <label className={`block text-white/90 ${getClass('body')} mb-2`}>
-                      {currentContent.filmTitleTh} <span className="text-red-400">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.filmTitleTh || ''}
-                      onChange={(e) => handleInputChange('filmTitleTh', e.target.value)}
-                      className={`w-full p-3 rounded-lg bg-white/10 border ${formErrors.filmTitleTh ? 'border-red-400 error-field' : 'border-white/20'} text-white placeholder-white/50 focus:border-[#FCB283] focus:outline-none`}
-                    />
-                    <ErrorMessage error={formErrors.filmTitleTh} />
-                  </div>
-                )}
-              </div>
-              
-              {/* Genre Selector */}
-              <GenreSelector
-                value={formData.genres}
-                onChange={handleGenreChange}
-                error={formErrors.genres}
-                required
-                label={currentLanguage === 'th' ? 'แนวภาพยนตร์' : 'Genre'}
-              />
-              
-              {/* Format Selector */}
-              <FormatSelector
-                value={formData.format}
-                onChange={handleFormatChange}
-                error={formErrors.format}
-                required
-                label={currentLanguage === 'th' ? 'รูปแบบภาพยนตร์' : 'Film Format'}
-              />
-              
-              {/* Duration */}
-              <div>
-                <label className={`block text-white/90 ${getClass('body')} mb-2`}>
-                  {currentContent.duration} <span className="text-red-400">*</span>
-                </label>
-                <input
-                  type="number"
-                  value={formData.duration}
-                  onChange={(e) => handleInputChange('duration', e.target.value)}
-                  min="1"
-                  className={`w-full p-3 rounded-lg bg-white/10 border ${formErrors.duration ? 'border-red-400 error-field' : 'border-white/20'} text-white placeholder-white/50 focus:border-[#FCB283] focus:outline-none`}
-                />
-                <ErrorMessage error={formErrors.duration} />
-              </div>
-            
-              {/* Synopsis */}
-              <div>
-                <label className={`block text-white/90 ${getClass('body')} mb-2`}>
-                  {currentContent.synopsis} <span className="text-red-400">*</span>
-                </label>
-                <textarea
-                  value={formData.synopsis}
-                  onChange={(e) => handleInputChange('synopsis', e.target.value)}
-                  rows={4}
-                  className={`w-full p-3 rounded-lg bg-white/10 border ${formErrors.synopsis ? 'border-red-400 error-field' : 'border-white/20'} text-white placeholder-white/50 focus:border-[#FCB283] focus:outline-none resize-vertical`}
-                />
-                <ErrorMessage error={formErrors.synopsis} />
-              </div>
-            
-              {/* Chiang Mai Connection */}
-              <div>
-                <label className={`block text-white/90 ${getClass('body')} mb-2`}>
-                  {currentContent.chiangmaiConnection}
-                </label>
-                <textarea
-                  value={formData.chiangmaiConnection}
-                  onChange={(e) => handleInputChange('chiangmaiConnection', e.target.value)}
-                  rows={3}
-                  className="w-full p-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/50 focus:border-[#FCB283] focus:outline-none resize-vertical"
-                />
-              </div>
-            </div>
-          </FormSection>
+          {/* Section 1: Nationality (for all categories) */}
+          <NationalitySelector
+            onNationalityChange={handleNationalityChange}
+            onNationalityTypeChange={handleNationalityTypeChange}
+          />
 
-          {/* Section 2: Nationality (for youth and future only) */}
-          {category !== 'world' && (
-            <NationalitySelector
-              onNationalityChange={handleNationalityChange}
-              onNationalityTypeChange={handleNationalityTypeChange}
-            />
-          )}
-
-          {/* Section 3: Submitter/Director Information */}
-          <FormSection title={category === 'world' ? currentContent.directorInfoTitle : currentContent.submitterInfoTitle} icon="👤">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Section 2: Submitter/Director Information */}
+          <FormSection title={category === 'world' ? currentContent.directorInfoTitle : currentContent.submitterInfoTitle} icon="👤" className="overflow-visible relative">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 overflow-visible">
               <div>
                 <label className={`block text-white/90 ${getClass('body')} mb-2`}>
                   {currentContent.submitterName} <span className="text-red-400">*</span>
@@ -731,6 +633,102 @@ const UnifiedSubmissionForm: React.FC<UnifiedSubmissionFormProps> = ({ category 
                   </div>
                 </>
               )}
+            </div>
+          </FormSection>
+
+          {/* Section 3: Film Information */}
+          <FormSection title={currentContent.filmInfoTitle} icon="🎬" className="overflow-visible relative">
+            <div className="space-y-6">
+              {/* Film Titles */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className={`block text-white/90 ${getClass('body')} mb-2`}>
+                    {currentContent.filmTitle} <span className="text-red-400">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.filmTitle}
+                    onChange={(e) => handleInputChange('filmTitle', e.target.value)}
+                    className={`w-full p-3 rounded-lg bg-white/10 border ${formErrors.filmTitle ? 'border-red-400 error-field' : 'border-white/20'} text-white placeholder-white/50 focus:border-[#FCB283] focus:outline-none`}
+                  />
+                  <ErrorMessage error={formErrors.filmTitle} />
+                </div>
+                
+                {isThaiNationality && (
+                  <div>
+                    <label className={`block text-white/90 ${getClass('body')} mb-2`}>
+                      {currentContent.filmTitleTh} <span className="text-red-400">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.filmTitleTh || ''}
+                      onChange={(e) => handleInputChange('filmTitleTh', e.target.value)}
+                      className={`w-full p-3 rounded-lg bg-white/10 border ${formErrors.filmTitleTh ? 'border-red-400 error-field' : 'border-white/20'} text-white placeholder-white/50 focus:border-[#FCB283] focus:outline-none`}
+                    />
+                    <ErrorMessage error={formErrors.filmTitleTh} />
+                  </div>
+                )}
+              </div>
+              
+              {/* Genre Selector */}
+              <GenreSelector
+                value={formData.genres}
+                onChange={handleGenreChange}
+                error={formErrors.genres}
+                required
+                label={currentLanguage === 'th' ? 'แนวภาพยนตร์' : 'Genre'}
+              />
+              
+              {/* Format Selector */}
+              <FormatSelector
+                value={formData.format}
+                onChange={handleFormatChange}
+                error={formErrors.format}
+                required
+                label={currentLanguage === 'th' ? 'รูปแบบภาพยนตร์' : 'Film Format'}
+              />
+              
+              {/* Duration */}
+              <div>
+                <label className={`block text-white/90 ${getClass('body')} mb-2`}>
+                  {currentContent.duration} <span className="text-red-400">*</span>
+                </label>
+                <input
+                  type="number"
+                  value={formData.duration}
+                  onChange={(e) => handleInputChange('duration', e.target.value)}
+                  min="1"
+                  className={`w-full p-3 rounded-lg bg-white/10 border ${formErrors.duration ? 'border-red-400 error-field' : 'border-white/20'} text-white placeholder-white/50 focus:border-[#FCB283] focus:outline-none`}
+                />
+                <ErrorMessage error={formErrors.duration} />
+              </div>
+            
+              {/* Synopsis */}
+              <div>
+                <label className={`block text-white/90 ${getClass('body')} mb-2`}>
+                  {currentContent.synopsis} <span className="text-red-400">*</span>
+                </label>
+                <textarea
+                  value={formData.synopsis}
+                  onChange={(e) => handleInputChange('synopsis', e.target.value)}
+                  rows={4}
+                  className={`w-full p-3 rounded-lg bg-white/10 border ${formErrors.synopsis ? 'border-red-400 error-field' : 'border-white/20'} text-white placeholder-white/50 focus:border-[#FCB283] focus:outline-none resize-vertical`}
+                />
+                <ErrorMessage error={formErrors.synopsis} />
+              </div>
+            
+              {/* Chiang Mai Connection */}
+              <div>
+                <label className={`block text-white/90 ${getClass('body')} mb-2`}>
+                  {currentContent.chiangmaiConnection}
+                </label>
+                <textarea
+                  value={formData.chiangmaiConnection}
+                  onChange={(e) => handleInputChange('chiangmaiConnection', e.target.value)}
+                  rows={3}
+                  className="w-full p-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/50 focus:border-[#FCB283] focus:outline-none resize-vertical"
+                />
+              </div>
             </div>
           </FormSection>
 

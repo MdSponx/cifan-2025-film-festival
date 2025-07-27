@@ -78,11 +78,12 @@
   position: relative;
   z-index: 1;
   margin-bottom: 2rem;
-  overflow: visible;
+  overflow: visible !important;
   transform: translateZ(0);
   will-change: transform;
   min-height: fit-content;
   height: auto;
+  contain: none;
 }
 
 /* Layout Containment Utility */
@@ -90,6 +91,28 @@
   contain: layout style;
   overflow: hidden;
   position: relative;
+}
+
+/* Nationality Dropdown Styles */
+.nationality-dropdown {
+  z-index: 9999 !important;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  max-height: 240px;
+  overflow-y: auto;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+/* Ensure dropdowns are not clipped */
+.overflow-visible {
+  overflow: visible !important;
+  contain: none !important;
 }
 
 .glass-card {

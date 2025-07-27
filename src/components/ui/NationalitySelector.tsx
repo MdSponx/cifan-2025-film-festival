@@ -167,13 +167,13 @@ const NationalitySelector: React.FC<NationalitySelectorProps> = ({
   }, [onNationalityChange, onNationalityTypeChange]);
 
   return (
-    <div className={`glass-container rounded-xl sm:rounded-2xl p-6 sm:p-8 ${className}`}>
+    <div className={`glass-container rounded-xl sm:rounded-2xl p-6 sm:p-8 overflow-visible relative ${className}`}>
       <h3 className={`text-lg sm:text-xl ${getTypographyClass('subtitle')} text-white mb-6`}>
         🌍 {currentContent.nationalityTitle}
       </h3>
       
       {/* Nationality Type Radio Buttons */}
-      <div className="mb-6">
+      <div className="mb-6 overflow-visible">
         <div className="flex flex-col sm:flex-row gap-4">
           <label className="flex items-center space-x-3 cursor-pointer">
             <input
@@ -209,7 +209,7 @@ const NationalitySelector: React.FC<NationalitySelectorProps> = ({
 
       {/* International Country Selector */}
       {nationalityType === 'international' && (
-        <div className="relative">
+        <div className="relative overflow-visible">
           <label className={`block text-white/90 ${getTypographyClass('body')} mb-2`}>
             {currentContent.searchCountry.replace('...', '')} <span className="text-red-400">*</span>
           </label>

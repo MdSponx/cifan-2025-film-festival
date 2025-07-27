@@ -17,7 +17,7 @@ const FormSection: React.FC<FormSectionProps> = ({
   const { getClass } = useTypography();
 
   return (
-    <div className={`glass-container form-section-container rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 mb-8 sm:mb-12 min-h-fit ${className}`}>
+    <div className={`glass-container form-section-container rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 mb-8 sm:mb-12 min-h-fit overflow-visible relative ${className}`}>
       <h3 className={`text-lg sm:text-xl ${getClass('subtitle')} text-white mb-4 sm:mb-6 relative z-10`}>
         {icon && <span className="mr-2">{icon}</span>}
         {title}
