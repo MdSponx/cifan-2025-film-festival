@@ -99,7 +99,7 @@ const NationalitySelector: React.FC<NationalitySelectorProps> = ({
   const [countrySearch, setCountrySearch] = useState('');
   const [showCountrySuggestions, setShowCountrySuggestions] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0, width: 0 });
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Dynamic typography classes based on language
   const getTypographyClass = (baseClass: string) => {
@@ -129,6 +129,18 @@ const NationalitySelector: React.FC<NationalitySelectorProps> = ({
   const filteredCountries = COUNTRIES.filter(country =>
     country.toLowerCase().includes(countrySearch.toLowerCase())
   ).slice(0, 10); // Show top 10 matches
+
+  // Enhanced blur handling with delay
+  const handleInputBlur = () => {
+    setTimeout(() => {
+      setShowCountrySuggestions(false);
+    }, 200);
+  };
+
+  // Prevent blur when clicking dropdown items
+  const handleDropdownMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+  };
 
   // Handle nationality type change
   const handleNationalityTypeChange = (type: 'thai' | 'international') => {
@@ -162,29 +174,30 @@ const NationalitySelector: React.FC<NationalitySelectorProps> = ({
     setShowCountrySuggestions(true);
   };
 
-  // Update dropdown position when window resizes or scrolls
+  // Handle input focus
+  const handleInputFocus = () => {
+    setShowCountrySuggestions(true);
+  };
+
+  // Click outside detection
   useEffect(() => {
-    const updateDropdownPosition = () => {
-      if (inputRef.current) {
-        const rect = inputRef.current.getBoundingClientRect();
-        setDropdownPosition({
-          top: rect.bottom + window.scrollY,
-          left: rect.left + window.scrollX,
-          width: rect.width
-        });
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current && 
+        !dropdownRef.current.contains(event.target as Node) &&
+        inputRef.current &&
+        !inputRef.current.contains(event.target as Node)
+      ) {
+        setShowCountrySuggestions(false);
       }
     };
 
     if (showCountrySuggestions) {
-      updateDropdownPosition();
+      document.addEventListener('mousedown', handleClickOutside);
     }
 
-    window.addEventListener('scroll', updateDropdownPosition);
-    window.addEventListener('resize', updateDropdownPosition);
-
     return () => {
-      window.removeEventListener('scroll', updateDropdownPosition);
-      window.removeEventListener('resize', updateDropdownPosition);
+      document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [showCountrySuggestions]);
 
@@ -195,7 +208,7 @@ const NationalitySelector: React.FC<NationalitySelectorProps> = ({
   }, [onNationalityChange, onNationalityTypeChange]);
 
   return (
-    <div className={`glass-container rounded-xl sm:rounded-2xl p-6 sm:p-8 overflow-visible relative ${className}`}>
+    <div className={`glass-container form-section-container rounded-xl sm:rounded-2xl p-6 sm:p-8 ${className}`} style={{ overflow: 'visible' }}>
       <h3 className={`text-lg sm:text-xl ${getTypographyClass('subtitle')} text-white mb-6`}>
         🌍 {currentContent.nationalityTitle}
       </h3>
@@ -237,7 +250,7 @@ const NationalitySelector: React.FC<NationalitySelectorProps> = ({
 
       {/* International Country Selector */}
       {nationalityType === 'international' && (
-        <div className="relative overflow-visible">
+        <div className="relative" style={{ zIndex: 1000, overflow: 'visible' }}>
           <label className={`block text-white/90 ${getTypographyClass('body')} mb-2`}>
             {currentContent.searchCountry.replace('...', '')} <span className="text-red-400">*</span>
           </label>
@@ -246,21 +259,26 @@ const NationalitySelector: React.FC<NationalitySelectorProps> = ({
             ref={inputRef}
             value={countrySearch}
             onChange={handleCountrySearchChange}
-            onFocus={() => setShowCountrySuggestions(true)}
-            onBlur={() => setTimeout(() => setShowCountrySuggestions(false), 200)}
+            onFocus={handleInputFocus}
+            onBlur={handleInputBlur}
             placeholder={currentContent.searchCountry}
+            autoComplete="off"
             required
-            className="w-full p-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/50 focus:border-[#FCB283] focus:outline-none"
+            className="w-full p-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/50 focus:border-[#FCB283] focus:outline-none relative z-10"
           />
           
           {/* Country Suggestions */}
           {showCountrySuggestions && countrySearch && filteredCountries.length > 0 && (
             <div 
-              className="fixed z-[9999] bg-white/25 backdrop-blur-xl border border-white/30 rounded-lg max-h-60 overflow-y-auto shadow-2xl"
-              style={{
-                top: `${dropdownPosition.top + 4}px`,
-                left: `${dropdownPosition.left}px`,
-                width: `${dropdownPosition.width}px`
+              ref={dropdownRef}
+              className="nationality-dropdown absolute left-0 right-0 mt-1 bg-gray-900/95 backdrop-blur-lg border border-white/20 rounded-lg shadow-2xl overflow-hidden"
+              style={{ 
+                zIndex: 9999,
+                maxHeight: '240px',
+                overflowY: 'auto',
+                top: '100%',
+                boxShadow: '0 10px 40px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1)',
+                backdropFilter: 'blur(20px)'
               }}
             >
               {filteredCountries.map((country, index) => (
@@ -268,7 +286,8 @@ const NationalitySelector: React.FC<NationalitySelectorProps> = ({
                   key={index}
                   type="button"
                   onClick={() => handleCountrySelect(country)}
-                  className={`w-full text-left px-4 py-3 hover:bg-white/40 transition-colors text-white ${getTypographyClass('body')} flex items-center space-x-3`}
+                  onMouseDown={handleDropdownMouseDown}
+                  className="nationality-dropdown-item w-full text-left px-4 py-3 hover:bg-white/10 active:bg-white/20 transition-colors text-white flex items-center space-x-3 border-none focus:outline-none focus:bg-white/10"
                 >
                   <span className="text-lg">{countryFlags[country] || '🏳️'}</span>
                   <span>{country}</span>
