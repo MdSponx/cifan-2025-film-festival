@@ -99,6 +99,7 @@ const NationalitySelector: React.FC<NationalitySelectorProps> = ({
   const [countrySearch, setCountrySearch] = useState('');
   const [showCountrySuggestions, setShowCountrySuggestions] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0, width: 0 });
 
   // Dynamic typography classes based on language
   const getTypographyClass = (baseClass: string) => {
@@ -164,12 +165,19 @@ const NationalitySelector: React.FC<NationalitySelectorProps> = ({
   // Update dropdown position when window resizes or scrolls
   useEffect(() => {
     const updateDropdownPosition = () => {
-      if (showCountrySuggestions && inputRef.current) {
-        // Force re-render to update position
-        setShowCountrySuggestions(false);
-        setTimeout(() => setShowCountrySuggestions(true), 0);
+      if (inputRef.current) {
+        const rect = inputRef.current.getBoundingClientRect();
+        setDropdownPosition({
+          top: rect.bottom + window.scrollY,
+          left: rect.left + window.scrollX,
+          width: rect.width
+        });
       }
     };
+
+    if (showCountrySuggestions) {
+      updateDropdownPosition();
+    }
 
     window.addEventListener('scroll', updateDropdownPosition);
     window.addEventListener('resize', updateDropdownPosition);
@@ -248,11 +256,11 @@ const NationalitySelector: React.FC<NationalitySelectorProps> = ({
           {/* Country Suggestions */}
           {showCountrySuggestions && countrySearch && filteredCountries.length > 0 && (
             <div 
-              className="fixed z-[9999] mt-1 bg-white/10 backdrop-blur-lg border border-white/20 rounded-lg max-h-60 overflow-y-auto shadow-2xl"
+              className="fixed z-[9999] bg-white/25 backdrop-blur-xl border border-white/30 rounded-lg max-h-60 overflow-y-auto shadow-2xl"
               style={{
-                top: `${inputRef.current?.getBoundingClientRect().bottom || 0}px`,
-                left: `${inputRef.current?.getBoundingClientRect().left || 0}px`,
-                width: `${inputRef.current?.getBoundingClientRect().width || 0}px`
+                top: `${dropdownPosition.top + 4}px`,
+                left: `${dropdownPosition.left}px`,
+                width: `${dropdownPosition.width}px`
               }}
             >
               {filteredCountries.map((country, index) => (
@@ -260,7 +268,7 @@ const NationalitySelector: React.FC<NationalitySelectorProps> = ({
                   key={index}
                   type="button"
                   onClick={() => handleCountrySelect(country)}
-                  className={`w-full text-left px-4 py-3 hover:bg-white/20 transition-colors text-white ${getTypographyClass('body')} flex items-center space-x-3`}
+                  className={`w-full text-left px-4 py-3 hover:bg-white/40 transition-colors text-white ${getTypographyClass('body')} flex items-center space-x-3`}
                 >
                   <span className="text-lg">{countryFlags[country] || '🏳️'}</span>
                   <span>{country}</span>

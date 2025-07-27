@@ -113,13 +113,14 @@
 .nationality-dropdown-fixed {
   position: fixed !important;
   z-index: 99999 !important;
-  background: rgba(17, 13, 22, 0.95);
+  background: rgba(17, 13, 22, 0.85);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 8px;
   max-height: 240px;
   overflow-y: auto;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  transition: all 0.2s ease-out;
 }
 
 /* Ensure dropdowns are not clipped */
