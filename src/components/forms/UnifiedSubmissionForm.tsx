@@ -259,16 +259,6 @@ const UnifiedSubmissionForm: React.FC<UnifiedSubmissionFormProps> = ({ category 
     if (!name?.trim()) errors[nameField] = validationMessages.required;
     if (isThaiNationality && !nameTh?.trim()) errors[nameThField] = validationMessages.required;
     if (!age) errors[ageField] = validationMessages.required;
-    else {
-      const ageNum = parseInt(age.toString());
-      // Age validation based on category
-      if (category === 'youth' && (ageNum < 12 || ageNum > 18)) {
-        errors[ageField] = currentLanguage === 'th' ? 'อายุต้องอยู่ระหว่าง 12-18 ปี' : 'Age must be between 12-18 years';
-      } else if (category === 'future' && (ageNum < 18 || ageNum > 25)) {
-        errors[ageField] = currentLanguage === 'th' ? 'อายุต้องไม่เกิน 25 ปี' : 'Age must not exceed 25 years';
-      }
-      // World category has no age restrictions
-    }
     if (!phone?.trim()) errors[phoneField] = validationMessages.required;
     if (!email?.trim()) {
       errors[emailField] = validationMessages.required;
@@ -379,6 +369,8 @@ const UnifiedSubmissionForm: React.FC<UnifiedSubmissionFormProps> = ({ category 
         // For world category, we'll implement draft saving later
         // Age validation based on form type - crew members must follow same age rules as main category
         const ageCategory = window.location.hash.includes('future') ? 'FUTURE' : 'YOUTH';
+        result = await submissionService.saveDraftWorldForm(formData as WorldFormData);
+      }
 
       setSubmissionState(prev => ({ ...prev, result }));
 
