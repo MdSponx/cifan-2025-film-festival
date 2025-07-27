@@ -398,10 +398,16 @@ const CrewManagement: React.FC<CrewManagementProps> = ({
                 name="age"
                 value={crewFormData.age}
                 onChange={handleCrewInputChange}
-                min={isWorldForm ? "1" : "12"}
+                min={isWorldForm ? "1" : window.location.hash.includes('future') ? "18" : "12"}
                 max={isWorldForm ? "100" : window.location.hash.includes('future') ? "25" : "18"}
                 className={`w-full p-3 rounded-lg bg-white/10 border ${crewFormErrors.age ? 'border-red-400' : 'border-white/20'} text-white placeholder-white/50 focus:border-[#FCB283] focus:outline-none`}
               />
+              {/* Age restriction warning for crew members */}
+              <p className={`text-xs ${getClass('body')} text-white/60 mt-1`}>
+                {!isWorldForm && window.location.hash.includes('future') && (currentLanguage === 'th' ? 'อายุไม่เกิน 25 ปี (นักศึกษาอุดมศึกษา)' : 'Age up to 25 years (University students)')}
+                {!isWorldForm && !window.location.hash.includes('future') && (currentLanguage === 'th' ? 'อายุ 12-18 ปี (นักเรียนมัธยมศึกษา)' : 'Age 12-18 years (High school students)')}
+                {isWorldForm && (currentLanguage === 'th' ? 'ไม่จำกัดอายุ (ประชาชนทั่วไป)' : 'No age limit (General public)')}
+              </p>
               <ErrorMessage error={crewFormErrors.age} />
             </div>
             

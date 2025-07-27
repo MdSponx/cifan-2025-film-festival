@@ -259,6 +259,16 @@ const UnifiedSubmissionForm: React.FC<UnifiedSubmissionFormProps> = ({ category 
     if (!name?.trim()) errors[nameField] = validationMessages.required;
     if (isThaiNationality && !nameTh?.trim()) errors[nameThField] = validationMessages.required;
     if (!age) errors[ageField] = validationMessages.required;
+    else {
+      const ageNum = parseInt(age.toString());
+      // Age validation based on category
+      if (category === 'youth' && (ageNum < 12 || ageNum > 18)) {
+        errors[ageField] = currentLanguage === 'th' ? 'อายุต้องอยู่ระหว่าง 12-18 ปี' : 'Age must be between 12-18 years';
+      } else if (category === 'future' && (ageNum < 18 || ageNum > 25)) {
+        errors[ageField] = currentLanguage === 'th' ? 'อายุต้องไม่เกิน 25 ปี' : 'Age must not exceed 25 years';
+      }
+      // World category has no age restrictions
+    }
     if (!phone?.trim()) errors[phoneField] = validationMessages.required;
     if (!email?.trim()) {
       errors[emailField] = validationMessages.required;
@@ -367,8 +377,8 @@ const UnifiedSubmissionForm: React.FC<UnifiedSubmissionFormProps> = ({ category 
         result = await submissionService.saveDraftFutureForm(formData as FutureFormData);
       } else {
         // For world category, we'll implement draft saving later
-        result = { success: false, error: 'Draft saving for world category coming soon', isDraft: true };
-      }
+        // Age validation based on form type - crew members must follow same age rules as main category
+        const ageCategory = window.location.hash.includes('future') ? 'FUTURE' : 'YOUTH';
 
       setSubmissionState(prev => ({ ...prev, result }));
 
@@ -627,8 +637,16 @@ const UnifiedSubmissionForm: React.FC<UnifiedSubmissionFormProps> = ({ category 
                   type="number"
                   value={category === 'world' ? (formData as WorldFormData).directorAge : (formData as YouthFormData | FutureFormData).submitterAge}
                   onChange={(e) => handleInputChange(category === 'world' ? 'directorAge' : 'submitterAge', e.target.value)}
+                  min={category === 'youth' ? "12" : category === 'future' ? "18" : "1"}
+                  max={category === 'youth' ? "18" : category === 'future' ? "25" : "100"}
                   className={`w-full p-3 rounded-lg bg-white/10 border ${formErrors[category === 'world' ? 'directorAge' : 'submitterAge'] ? 'border-red-400 error-field' : 'border-white/20'} text-white placeholder-white/50 focus:border-[#FCB283] focus:outline-none`}
                 />
+                {/* Age restriction warning */}
+                <p className={`text-xs ${getClass('body')} text-white/60 mt-1`}>
+                  {category === 'youth' && (currentLanguage === 'th' ? 'อายุ 12-18 ปี (นักเรียนมัธยมศึกษา)' : 'Age 12-18 years (High school students)')}
+                  {category === 'future' && (currentLanguage === 'th' ? 'อายุไม่เกิน 25 ปี (นักศึกษาอุดมศึกษา)' : 'Age up to 25 years (University students)')}
+                  {category === 'world' && (currentLanguage === 'th' ? 'ไม่จำกัดอายุ (ประชาชนทั่วไป)' : 'No age limit (General public)')}
+                </p>
                 <ErrorMessage error={formErrors[category === 'world' ? 'directorAge' : 'submitterAge']} />
               </div>
               
