@@ -155,10 +155,8 @@ const NationalitySelector: React.FC<NationalitySelectorProps> = ({
       // CRITICAL FIX: When switching to 'international', immediately set parent nationality to empty
       // and clear the local country search state.
       onNationalityChange(''); // Set parent form's nationality to empty string
-      onNationalityChange('');
       onNationalityTypeChange(false);
       setCountrySearch(''); // Clear local search input
-      setCountrySearch('');
     }
   };
 

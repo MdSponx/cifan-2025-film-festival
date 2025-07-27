@@ -234,7 +234,7 @@ const UnifiedSubmissionForm: React.FC<UnifiedSubmissionFormProps> = ({ category 
 
     // Film Information
     if (!formData.filmTitle.trim()) errors.filmTitle = validationMessages.required;
-    // Thai Film Title is only required when nationality is "Thailand" 
+    // Thai Film Title is only required when nationality is "Thailand"
     const isThaiNationality = category !== 'world' && (formData as YouthFormData | FutureFormData).nationality === 'Thailand';
     if (isThaiNationality && !formData.filmTitleTh?.trim()) {
       errors.filmTitleTh = validationMessages.required;
@@ -321,9 +321,7 @@ const UnifiedSubmissionForm: React.FC<UnifiedSubmissionFormProps> = ({ category 
   };
 
   const handleNationalityChange = (nationality: string) => {
-    if (category !== 'world') {
-      handleInputChange('nationality', nationality);
-    }
+    handleInputChange('nationality', nationality);
   };
 
 
@@ -410,7 +408,7 @@ const UnifiedSubmissionForm: React.FC<UnifiedSubmissionFormProps> = ({ category 
         <div className="max-w-4xl mx-auto">
           <SubmissionProgressComponent 
             progress={submissionState.progress}
-            className="max-w-2xl mx-auto"
+            onNationalityTypeChange={() => {}} // No-op function for compatibility
           />
         </div>
       </div>
