@@ -234,11 +234,7 @@ const UnifiedSubmissionForm: React.FC<UnifiedSubmissionFormProps> = ({ category 
 
     // Film Information
     if (!formData.filmTitle.trim()) errors.filmTitle = validationMessages.required;
-    // Thai Film Title is only required when nationality is "Thailand"
-    const isThaiNationality = category !== 'world' && (formData as YouthFormData | FutureFormData).nationality === 'Thailand';
-    if (isThaiNationality && !formData.filmTitleTh?.trim()) {
-      errors.filmTitleTh = validationMessages.required;
-    }
+    // Thai Film Title is now optional for all nationalities (no validation required)
     if (!formData.genres || formData.genres.length === 0) errors.genres = validationMessages.required;
     if (!formData.format) errors.format = validationMessages.formatRequired;
     if (!formData.duration || parseInt(formData.duration) <= 0) errors.duration = validationMessages.required;
