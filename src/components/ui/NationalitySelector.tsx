@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 // Comprehensive list of countries
@@ -98,6 +99,7 @@ const NationalitySelector: React.FC<NationalitySelectorProps> = ({
   const [nationalityType, setNationalityType] = useState<'thai' | 'international'>('thai');
   const [countrySearch, setCountrySearch] = useState('');
   const [showCountrySuggestions, setShowCountrySuggestions] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // Dynamic typography classes based on language
   const getTypographyClass = (baseClass: string) => {
@@ -160,6 +162,25 @@ const NationalitySelector: React.FC<NationalitySelectorProps> = ({
     setShowCountrySuggestions(true);
   };
 
+  // Update dropdown position when window resizes or scrolls
+  useEffect(() => {
+    const updateDropdownPosition = () => {
+      if (showCountrySuggestions && inputRef.current) {
+        // Force re-render to update position
+        setShowCountrySuggestions(false);
+        setTimeout(() => setShowCountrySuggestions(true), 0);
+      }
+    };
+
+    window.addEventListener('scroll', updateDropdownPosition);
+    window.addEventListener('resize', updateDropdownPosition);
+
+    return () => {
+      window.removeEventListener('scroll', updateDropdownPosition);
+      window.removeEventListener('resize', updateDropdownPosition);
+    };
+  }, [showCountrySuggestions]);
+
   // Initialize with Thai nationality on mount
   useEffect(() => {
     onNationalityChange('Thailand');
@@ -215,6 +236,7 @@ const NationalitySelector: React.FC<NationalitySelectorProps> = ({
           </label>
           <input
             type="text"
+            ref={inputRef}
             value={countrySearch}
             onChange={handleCountrySearchChange}
             onFocus={() => setShowCountrySuggestions(true)}
@@ -226,7 +248,14 @@ const NationalitySelector: React.FC<NationalitySelectorProps> = ({
           
           {/* Country Suggestions */}
           {showCountrySuggestions && countrySearch && filteredCountries.length > 0 && (
-            <div className="absolute z-10 w-full mt-1 bg-white/10 backdrop-blur-lg border border-white/20 rounded-lg max-h-60 overflow-y-auto">
+            <div 
+              className="fixed z-[9999] mt-1 bg-white/10 backdrop-blur-lg border border-white/20 rounded-lg max-h-60 overflow-y-auto shadow-2xl"
+              style={{
+                top: `${inputRef.current?.getBoundingClientRect().bottom || 0}px`,
+                left: `${inputRef.current?.getBoundingClientRect().left || 0}px`,
+                width: `${inputRef.current?.getBoundingClientRect().width || 0}px`
+              }}
+            >
               {filteredCountries.map((country, index) => (
                 <button
                   key={index}

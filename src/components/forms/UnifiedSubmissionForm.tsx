@@ -465,11 +465,13 @@ const UnifiedSubmissionForm: React.FC<UnifiedSubmissionFormProps> = ({ category 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-8">
           
-          {/* Section 1: Nationality (for all categories) */}
-          <NationalitySelector
-            onNationalityChange={handleNationalityChange}
-            onNationalityTypeChange={handleNationalityTypeChange}
-          />
+          {/* Section 1: Nationality (for all categories) - No container wrapper */}
+          <div className="overflow-visible relative z-10">
+            <NationalitySelector
+              onNationalityChange={handleNationalityChange}
+              onNationalityTypeChange={handleNationalityTypeChange}
+            />
+          </div>
 
           {/* Section 2: Submitter/Director Information */}
           <FormSection title={category === 'world' ? currentContent.directorInfoTitle : currentContent.submitterInfoTitle} icon="👤" className="overflow-visible relative">
