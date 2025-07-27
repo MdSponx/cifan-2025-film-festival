@@ -104,7 +104,6 @@ const UnifiedSubmissionForm: React.FC<UnifiedSubmissionFormProps> = ({ category 
   }>({
     isSubmitting: false
   });
-  const [isThaiNationality, setIsThaiNationality] = useState(true);
 
   // Fetch user profile data and populate form
   useEffect(() => {
@@ -235,8 +234,9 @@ const UnifiedSubmissionForm: React.FC<UnifiedSubmissionFormProps> = ({ category 
 
     // Film Information
     if (!formData.filmTitle.trim()) errors.filmTitle = validationMessages.required;
-    // Thai Film Title is only required when nationality is "Thailand"
-    if (category !== 'world' && (formData as YouthFormData | FutureFormData).nationality === 'Thailand' && !formData.filmTitleTh?.trim()) {
+    // Thai Film Title is only required when nationality is "Thailand" 
+    const isThaiNationality = category !== 'world' && (formData as YouthFormData | FutureFormData).nationality === 'Thailand';
+    if (isThaiNationality && !formData.filmTitleTh?.trim()) {
       errors.filmTitleTh = validationMessages.required;
     }
     if (!formData.genres || formData.genres.length === 0) errors.genres = validationMessages.required;
@@ -326,9 +326,6 @@ const UnifiedSubmissionForm: React.FC<UnifiedSubmissionFormProps> = ({ category 
     }
   };
 
-  const handleNationalityTypeChange = (isThaiNationality: boolean) => {
-    setIsThaiNationality(isThaiNationality);
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -492,7 +489,7 @@ const UnifiedSubmissionForm: React.FC<UnifiedSubmissionFormProps> = ({ category 
           <div className="overflow-visible relative z-10">
             <NationalitySelector
               onNationalityChange={handleNationalityChange}
-              onNationalityTypeChange={handleNationalityTypeChange}
+              onNationalityTypeChange={() => {}} // No longer needed but kept for compatibility
             />
           </div>
 
@@ -515,7 +512,7 @@ const UnifiedSubmissionForm: React.FC<UnifiedSubmissionFormProps> = ({ category 
                   <ErrorMessage error={formErrors.filmTitle} />
                 </div>
                 
-                {(category !== 'world' && (formData as YouthFormData | FutureFormData).nationality === 'Thailand') && (
+                {category !== 'world' && (formData as YouthFormData | FutureFormData).nationality === 'Thailand' && (
                   <div>
                     <label className={`block text-white/90 ${getClass('body')} mb-2`}>
                       {currentContent.filmTitleTh} <span className="text-red-400">*</span>
@@ -609,7 +606,7 @@ const UnifiedSubmissionForm: React.FC<UnifiedSubmissionFormProps> = ({ category 
                 <ErrorMessage error={formErrors[category === 'world' ? 'directorName' : 'submitterName']} />
               </div>
               
-              {isThaiNationality && (
+              {(category !== 'world' && (formData as YouthFormData | FutureFormData).nationality === 'Thailand') && (
                 <div>
                   <label className={`block text-white/90 ${getClass('body')} mb-2`}>
                     {currentContent.submitterNameTh} <span className="text-red-400">*</span>
@@ -762,7 +759,7 @@ const UnifiedSubmissionForm: React.FC<UnifiedSubmissionFormProps> = ({ category 
           <CrewManagement
             crewMembers={formData.crewMembers}
             onCrewMembersChange={handleCrewMembersChange}
-            isThaiNationality={isThaiNationality}
+            isThaiNationality={category !== 'world' && (formData as YouthFormData | FutureFormData).nationality === 'Thailand'}
             submitterSchoolName={category === 'youth' ? (formData as YouthFormData).schoolName : undefined}
             submitterUniversityName={category === 'future' ? (formData as FutureFormData).universityName : undefined}
             error={formErrors.crewMembers}
