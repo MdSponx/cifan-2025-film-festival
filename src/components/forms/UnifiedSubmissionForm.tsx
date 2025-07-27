@@ -757,7 +757,7 @@ const UnifiedSubmissionForm: React.FC<UnifiedSubmissionFormProps> = ({ category 
           <CrewManagement
             crewMembers={formData.crewMembers}
             onCrewMembersChange={handleCrewMembersChange}
-            isThaiNationality={category !== 'world' && (formData as YouthFormData | FutureFormData).nationality === 'Thailand'}
+            isThaiNationality={(category === 'youth' || category === 'future') && (formData as YouthFormData | FutureFormData).nationality === 'Thailand'}
             submitterSchoolName={category === 'youth' ? (formData as YouthFormData).schoolName : undefined}
             submitterUniversityName={category === 'future' ? (formData as FutureFormData).universityName : undefined}
             error={formErrors.crewMembers}
