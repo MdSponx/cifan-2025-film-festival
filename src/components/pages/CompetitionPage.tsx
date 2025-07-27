@@ -769,7 +769,7 @@ const CompetitionPage = () => {
                 >
                   {currentLanguage === 'th' ? 'ติดต่อสอบถาม' : 'Contact Support'}
                 </AnimatedButton>
-              </div>
+               </>
             )}
           </div>
         </div>
