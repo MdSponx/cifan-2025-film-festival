@@ -318,7 +318,7 @@ const CompetitionPage = () => {
       3: 'WORLD'
     };
 
-    const clickedCategory = awards.find(award => award.id === categoryId);
+    const clickedCategory = currentContent.categories.find(category => category.id === categoryId);
     if (!clickedCategory) return;
 
     const originalRoute = `#${categoryMap[categoryId]}`;
@@ -347,11 +347,11 @@ const CompetitionPage = () => {
     } else {
       // Age does not fit, find a suggested category
       let bestSuggested: { id: number; title: { th: string; en: string }; route: string } | null = null;
-      for (const award of awards) {
-        const currentCategoryType = categoryNameMap[award.id];
+      for (const category of currentContent.categories) {
+        const currentCategoryType = categoryNameMap[category.id];
         const currentLimits = AGE_LIMITS[currentCategoryType];
         if (userAge >= currentLimits.min && userAge <= currentLimits.max) {
-          bestSuggested = { ...award, route: `#${categoryMap[award.id]}` };
+          bestSuggested = { ...category, route: `#${categoryMap[category.id]}` };
           break; // Found a suitable category
         }
       }
