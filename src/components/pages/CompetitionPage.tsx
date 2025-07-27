@@ -717,20 +717,7 @@ const CompetitionPage = () => {
                       }, 100);
                     }}
                   >
-                    {currentLanguage === 'th' ? `ไปที่หมวด ${suggestedCategory.title[currentLanguage]}` : `Go to ${suggestedCategory.title[currentLanguage]}`}
-                  </AnimatedButton>
-                  <AnimatedButton
-                    variant="secondary"
-                    size="medium"
-                    onClick={() => {
-                      window.location.hash = originalCategory.route;
-                      setShowAgeWarningModal(false);
-                      setTimeout(() => {
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                      }, 100);
-                    }}
-                  >
-                    {currentLanguage === 'th' ? `สมัครหมวด ${originalCategory.title[currentLanguage]} ต่อไป` : `Proceed with ${originalCategory.title[currentLanguage]} Anyway`}
+                    {currentLanguage === 'th' ? `ไปที่หมวด ${suggestedCategory.title.th}` : `Go to ${suggestedCategory.title.en}`}
                   </AnimatedButton>
                   <AnimatedButton
                     variant="outline"
@@ -745,8 +732,8 @@ const CompetitionPage = () => {
               <>
                 <p className={`${getTypographyClass('body')} text-white/80 mb-6`}>
                   {currentLanguage === 'th'
-                    ? 'อายุของคุณไม่ตรงกับเกณฑ์ของหมวดการประกวดใดๆ'
-                    : 'Your age does not fit the requirements for any competition category.'
+                    ? 'อายุของคุณไม่ตรงกับเกณฑ์ของหมวดการประกวดใดๆ กรุณาติดต่อเจ้าหน้าที่เพื่อขอคำแนะนำ'
+                    : 'Your age does not fit the requirements for any competition category. Please contact support for guidance.'
                   }
                 </p>
                 <AnimatedButton
@@ -756,20 +743,7 @@ const CompetitionPage = () => {
                 >
                   {currentLanguage === 'th' ? 'ปิด' : 'Close'}
                 </AnimatedButton>
-                <AnimatedButton
-                  variant="outline"
-                  size="medium"
-                  onClick={() => {
-                    window.location.hash = '#coming-soon'; // Or contact page
-                    setShowAgeWarningModal(false);
-                    setTimeout(() => {
-                      window.scrollTo({ top: 0, behavior: 'smooth' });
-                    }, 100);
-                  }}
-                >
-                  {currentLanguage === 'th' ? 'ติดต่อสอบถาม' : 'Contact Support'}
-                </AnimatedButton>
-               </>
+              </>
             )}
           </div>
         </div>

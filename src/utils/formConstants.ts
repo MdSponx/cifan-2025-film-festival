@@ -44,7 +44,7 @@ export const FILE_TYPES = {
 export const AGE_LIMITS = {
   YOUTH: { min: 12, max: 18 },
   FUTURE: { min: 18, max: 25 },
-  WORLD: { min: 18, max: 100 }
+  WORLD: { min: 20, max: 100 }
 };
 
 // Duration limits (in minutes)
