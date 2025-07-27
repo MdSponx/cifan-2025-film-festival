@@ -320,6 +320,10 @@ const UnifiedSubmissionForm: React.FC<UnifiedSubmissionFormProps> = ({ category 
     handleInputChange('nationality', nationality);
   };
 
+  // Compute Thai nationality status for validation and rendering
+  const isThaiNationality = (category === 'youth' || category === 'future') && 
+    (formData as YouthFormData | FutureFormData).nationality === 'Thailand';
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
