@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import AnimatedButton from '../ui/AnimatedButton';
+import { useAuth } from '../auth/AuthContext';
+import { AGE_LIMITS } from '../../utils/formConstants';
 
 const CompetitionPage = () => {
   const { i18n } = useTranslation();
@@ -9,6 +11,10 @@ const CompetitionPage = () => {
   const getTypographyClass = (baseClass: string) => {
     return i18n.language === 'th' ? `${baseClass}-th` : `${baseClass}-en`;
   };
+  const { userProfile } = useAuth();
+  const [showAgeWarningModal, setShowAgeWarningModal] = useState(false);
+  const [suggestedCategory, setSuggestedCategory] = useState<{ id: number; title: { th: string; en: string }; route: string } | null>(null);
+  const [originalCategory, setOriginalCategory] = useState<{ id: number; title: { th: string; en: string }; route: string } | null>(null);
 
   const currentLanguage = i18n.language as 'en' | 'th';
 
@@ -300,6 +306,66 @@ const CompetitionPage = () => {
     }
   };
 
+  const handleCategoryClick = (categoryId: number) => {
+    const categoryMap: { [key: number]: string } = {
+      1: 'submit-youth',
+      2: 'submit-future',
+      3: 'submit-world'
+    };
+    const categoryNameMap: { [key: number]: 'YOUTH' | 'FUTURE' | 'WORLD' } = {
+      1: 'YOUTH',
+      2: 'FUTURE',
+      3: 'WORLD'
+    };
+
+    const clickedCategory = awards.find(award => award.id === categoryId);
+    if (!clickedCategory) return;
+
+    const originalRoute = `#${categoryMap[categoryId]}`;
+    setOriginalCategory({ ...clickedCategory, route: originalRoute });
+
+    if (!userProfile || !userProfile.age) {
+      // If user is not logged in or age is not available, proceed directly.
+      // ProtectedRoute on submission page will handle login/profile completion.
+      window.location.hash = originalRoute;
+      setTimeout(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }, 100);
+      return;
+    }
+
+    const userAge = userProfile.age;
+    const targetCategoryType = categoryNameMap[categoryId];
+    const targetLimits = AGE_LIMITS[targetCategoryType];
+
+    // Check if user's age fits the clicked category
+    if (userAge >= targetLimits.min && userAge <= targetLimits.max) {
+      window.location.hash = originalRoute;
+      setTimeout(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }, 100);
+    } else {
+      // Age does not fit, find a suggested category
+      let bestSuggested: { id: number; title: { th: string; en: string }; route: string } | null = null;
+      for (const award of awards) {
+        const currentCategoryType = categoryNameMap[award.id];
+        const currentLimits = AGE_LIMITS[currentCategoryType];
+        if (userAge >= currentLimits.min && userAge <= currentLimits.max) {
+          bestSuggested = { ...award, route: `#${categoryMap[award.id]}` };
+          break; // Found a suitable category
+        }
+      }
+      setSuggestedCategory(bestSuggested);
+      setShowAgeWarningModal(true);
+    }
+  };
+
+  const categoryNameMap: { [key: number]: 'YOUTH' | 'FUTURE' | 'WORLD' } = {
+    1: 'YOUTH',
+    2: 'FUTURE',
+    3: 'WORLD'
+  };
+
   const currentContent = content[currentLanguage];
 
   return (
@@ -400,18 +466,7 @@ const CompetitionPage = () => {
                       size="medium" 
                       icon="📋"
                       className={`w-full ${getTypographyClass('menu')}`}
-                      onClick={() => {
-                        const categoryMap: { [key: number]: string } = {
-                          1: 'submit-youth',    // Youth Fantastic
-                          2: 'submit-future',   // Future Fantastic  
-                          3: 'submit-world'     // World Fantastic
-                        };
-                        window.location.hash = `#${categoryMap[category.id]}`;
-                        // Scroll to top after navigation
-                        setTimeout(() => {
-                          window.scrollTo({ top: 0, behavior: 'smooth' });
-                        }, 100);
-                      }}
+                      onClick={() => handleCategoryClick(category.id)}
                     >
                       {currentContent.submitNow}
                     </AnimatedButton>
@@ -626,6 +681,99 @@ const CompetitionPage = () => {
           </div>
         </div>
       </section>
+
+      {/* Age Warning Modal */}
+      {showAgeWarningModal && originalCategory && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="glass-container rounded-2xl max-w-md w-full p-6 text-center">
+            <div className="text-4xl mb-4">⚠️</div>
+            <h3 className={`text-xl ${getTypographyClass('header')} text-white mb-3`}>
+              {currentLanguage === 'th' ? 'คุณสมบัติอายุไม่ตรง' : 'Age Mismatch'}
+            </h3>
+            <p className={`${getTypographyClass('body')} text-white/80 mb-4`}>
+              {currentLanguage === 'th'
+                ? `อายุของคุณ (${userProfile?.age} ปี) ไม่ตรงกับเกณฑ์ของหมวด "${originalCategory.title[currentLanguage]}" (อายุ ${AGE_LIMITS[categoryNameMap[originalCategory.id]].min}-${AGE_LIMITS[categoryNameMap[originalCategory.id]].max} ปี)`
+                : `Your age (${userProfile?.age} years old) does not fit the requirements for "${originalCategory.title[currentLanguage]}" (Age ${AGE_LIMITS[categoryNameMap[originalCategory.id]].min}-${AGE_LIMITS[categoryNameMap[originalCategory.id]].max}).`
+              }
+            </p>
+
+            {suggestedCategory ? (
+              <>
+                <p className={`${getTypographyClass('body')} text-white/80 mb-6`}>
+                  {currentLanguage === 'th'
+                    ? `จากอายุของคุณ คุณอาจมีสิทธิ์สมัครในหมวด "${suggestedCategory.title[currentLanguage]}" (อายุ ${AGE_LIMITS[categoryNameMap[suggestedCategory.id]].min}-${AGE_LIMITS[categoryNameMap[suggestedCategory.id]].max} ปี)`
+                    : `Based on your age, you might be eligible for "${suggestedCategory.title[currentLanguage]}" (Age ${AGE_LIMITS[categoryNameMap[suggestedCategory.id]].min}-${AGE_LIMITS[categoryNameMap[suggestedCategory.id]].max}).`
+                  }
+                </p>
+                <div className="flex flex-col space-y-3">
+                  <AnimatedButton
+                    variant="primary"
+                    size="medium"
+                    onClick={() => {
+                      window.location.hash = suggestedCategory.route;
+                      setShowAgeWarningModal(false);
+                      setTimeout(() => {
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                      }, 100);
+                    }}
+                  >
+                    {currentLanguage === 'th' ? `ไปที่หมวด ${suggestedCategory.title[currentLanguage]}` : `Go to ${suggestedCategory.title[currentLanguage]}`}
+                  </AnimatedButton>
+                  <AnimatedButton
+                    variant="secondary"
+                    size="medium"
+                    onClick={() => {
+                      window.location.hash = originalCategory.route;
+                      setShowAgeWarningModal(false);
+                      setTimeout(() => {
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                      }, 100);
+                    }}
+                  >
+                    {currentLanguage === 'th' ? `สมัครหมวด ${originalCategory.title[currentLanguage]} ต่อไป` : `Proceed with ${originalCategory.title[currentLanguage]} Anyway`}
+                  </AnimatedButton>
+                  <AnimatedButton
+                    variant="outline"
+                    size="medium"
+                    onClick={() => setShowAgeWarningModal(false)}
+                  >
+                    {currentLanguage === 'th' ? 'ยกเลิก' : 'Cancel'}
+                  </AnimatedButton>
+                </div>
+              </>
+            ) : (
+              <>
+                <p className={`${getTypographyClass('body')} text-white/80 mb-6`}>
+                  {currentLanguage === 'th'
+                    ? 'อายุของคุณไม่ตรงกับเกณฑ์ของหมวดการประกวดใดๆ'
+                    : 'Your age does not fit the requirements for any competition category.'
+                  }
+                </p>
+                <AnimatedButton
+                  variant="primary"
+                  size="medium"
+                  onClick={() => setShowAgeWarningModal(false)}
+                >
+                  {currentLanguage === 'th' ? 'ปิด' : 'Close'}
+                </AnimatedButton>
+                <AnimatedButton
+                  variant="outline"
+                  size="medium"
+                  onClick={() => {
+                    window.location.hash = '#coming-soon'; // Or contact page
+                    setShowAgeWarningModal(false);
+                    setTimeout(() => {
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }, 100);
+                  }}
+                >
+                  {currentLanguage === 'th' ? 'ติดต่อสอบถาม' : 'Contact Support'}
+                </AnimatedButton>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
