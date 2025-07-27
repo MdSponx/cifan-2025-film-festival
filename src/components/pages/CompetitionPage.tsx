@@ -692,8 +692,8 @@ const CompetitionPage = () => {
             </h3>
             <p className={`${getTypographyClass('body')} text-white/80 mb-4`}>
               {currentLanguage === 'th'
-                ? `อายุของคุณ (${userProfile?.age} ปี) ไม่ตรงกับเกณฑ์ของหมวด "${originalCategory.title.th}" (อายุ ${AGE_LIMITS[categoryNameMap[originalCategory.id]].min}-${AGE_LIMITS[categoryNameMap[originalCategory.id]].max} ปี)`
-                : `Your age (${userProfile?.age} years old) does not fit the requirements for "${originalCategory.title.en}" (Age ${AGE_LIMITS[categoryNameMap[originalCategory.id]].min}-${AGE_LIMITS[categoryNameMap[originalCategory.id]].max} years).`
+                ? `อายุของคุณ (${userProfile?.age} ปี) ไม่ตรงกับเกณฑ์ของหมวด "${currentContent.categories.find(cat => cat.id === originalCategory.id)?.title || 'หมวดการประกวด'}" (อายุ ${AGE_LIMITS[categoryNameMap[originalCategory.id]].min}-${AGE_LIMITS[categoryNameMap[originalCategory.id]].max} ปี)`
+                : `Your age (${userProfile?.age} years old) does not fit the requirements for "${currentContent.categories.find(cat => cat.id === originalCategory.id)?.title || 'Competition Category'}" (Age ${AGE_LIMITS[categoryNameMap[originalCategory.id]].min}-${AGE_LIMITS[categoryNameMap[originalCategory.id]].max} years).`
               }
             </p>
 
@@ -701,8 +701,8 @@ const CompetitionPage = () => {
               <>
                 <p className={`${getTypographyClass('body')} text-white/80 mb-6`}>
                   {currentLanguage === 'th'
-                    ? `จากอายุของคุณ คุณอาจมีสิทธิ์สมัครในหมวด "${suggestedCategory.title.th}" (อายุ ${AGE_LIMITS[categoryNameMap[suggestedCategory.id]].min}-${AGE_LIMITS[categoryNameMap[suggestedCategory.id]].max} ปี)`
-                    : `Based on your age, you might be eligible for "${suggestedCategory.title.en}" (Age ${AGE_LIMITS[categoryNameMap[suggestedCategory.id]].min}-${AGE_LIMITS[categoryNameMap[suggestedCategory.id]].max} years).`
+                    ? `จากอายุของคุณ คุณอาจมีสิทธิ์สมัครในหมวด "${currentContent.categories.find(cat => cat.id === suggestedCategory.id)?.title || 'หมวดการประกวด'}" (อายุ ${AGE_LIMITS[categoryNameMap[suggestedCategory.id]].min}-${AGE_LIMITS[categoryNameMap[suggestedCategory.id]].max} ปี)`
+                    : `Based on your age, you might be eligible for "${currentContent.categories.find(cat => cat.id === suggestedCategory.id)?.title || 'Competition Category'}" (Age ${AGE_LIMITS[categoryNameMap[suggestedCategory.id]].min}-${AGE_LIMITS[categoryNameMap[suggestedCategory.id]].max} years).`
                   }
                 </p>
                 <div className="flex flex-col space-y-3">
@@ -717,7 +717,7 @@ const CompetitionPage = () => {
                       }, 100);
                     }}
                   >
-                    {currentLanguage === 'th' ? `ไปที่หมวด${suggestedCategory.title.th}` : `Go to ${suggestedCategory.title.en}`}
+                    {currentLanguage === 'th' ? `ไปที่หมวด${currentContent.categories.find(cat => cat.id === suggestedCategory.id)?.title || 'หมวดการประกวด'}` : `Go to ${currentContent.categories.find(cat => cat.id === suggestedCategory.id)?.title || 'Competition Category'}`}
                   </AnimatedButton>
                   <AnimatedButton
                     variant="outline"
