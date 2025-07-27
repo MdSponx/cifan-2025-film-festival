@@ -509,7 +509,7 @@ const UnifiedSubmissionForm: React.FC<UnifiedSubmissionFormProps> = ({ category 
                 {category !== 'world' && (formData as YouthFormData | FutureFormData).nationality === 'Thailand' && (
                   <div>
                     <label className={`block text-white/90 ${getClass('body')} mb-2`}>
-                      {currentContent.filmTitleTh} <span className="text-red-400">*</span>
+                      {currentContent.filmTitleTh}
                     </label>
                     <input
                       type="text"
